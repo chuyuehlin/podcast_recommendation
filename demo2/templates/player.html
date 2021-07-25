@@ -219,7 +219,8 @@
 
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-  token = 'BQDafCR8rkMncV9GXuvDxObckkBNpv33Qb7E5KQ2Y-lC4NunLXZNoFMbe021HG19SKL5dGnuR_oMtxUX2XOLf0NMvcAfo12_1U_hKBouHj4DTvGjWWI6_vwsVH3fLw7K7aU_iVOcVd8fdjAzaq0ZsV4l-e-vXB0U6NG0Z1XGwtztGwpdpjvIoNk4GpGkCDgJXR-xkQjik1VfPeR2TA';
+		token = '{{access_token}}';
+
   player = new Spotify.Player({
     name: 'Hello',
     getOAuthToken: cb => { cb(token); }
