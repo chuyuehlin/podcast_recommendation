@@ -219,8 +219,7 @@
 
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-		token = '{{access_token}}';
-
+  token = '{{access_token}}';
   player = new Spotify.Player({
     name: 'Hello',
     getOAuthToken: cb => { cb(token); }
@@ -274,7 +273,7 @@
     let updateTimer;
 
     // Create new audio element
-    let curr_track = document.createElement('audio');
+    // let curr_track = document.createElement('audio');
 
     // Define the tracks that have to be played
     let track_list = [
@@ -301,28 +300,15 @@
       // now_playing.textContent = "PLAYING " + (track_index + 1) + " OF " + track_list.length;
 
       // Set an interval of 1000 milliseconds for updating the seek slider
-      updateTimer = setInterval(seekUpdate, 1000);
+      updateTimer = setInterval(seekUpdate, 500);
 
       // Move to the next track if the current one finishes playing
-      curr_track.addEventListener("ended", nextTrack);
+      // curr_track.addEventListener("ended", nextTrack);
 
       // Apply a random background color
       //random_bg_color();
     }
 
-    function random_bg_color() {
-
-      // Get a random number between 64 to 256 (for getting lighter colors)
-      let red = Math.floor(Math.random() * 256) + 64;
-      let green = Math.floor(Math.random() * 256) + 64;
-      let blue = Math.floor(Math.random() * 256) + 64;
-
-      // Construct a color withe the given values
-      let bgColor = "rgb(" + red + "," + green + "," + blue + ")";
-
-      // Set the background to that color
-      document.body.style.background = bgColor;
-    }
 
     // Reset Values
     function resetValues() {
@@ -339,7 +325,6 @@
     function playTrack() {
       
       play(did,token);
-      curr_track.play();
       isPlaying = true;
 
       // Replace icon with the pause icon
@@ -347,8 +332,7 @@
     }
 
     function pauseTrack() {
-      player.togglePlay()
-      curr_track.pause();
+      player.pause()
       isPlaying = false;
 
       // Replace icon with the play icon
@@ -356,49 +340,54 @@
     }
 
     function nextTrack() {
-      if (track_index < track_list.length - 1)
-        track_index += 1;
-      else track_index = 0;
-      loadTrack(track_index);
-      playTrack();
+      // if (track_index < track_list.length - 1)
+      //   track_index += 1;
+      // else track_index = 0;
+      // loadTrack(track_index);
+      // playTrack();
     }
 
     function prevTrack() {
-      if (track_index > 0)
-        track_index -= 1;
-      else track_index = track_list.length;
-      loadTrack(track_index);
-      playTrack();
+      // if (track_index > 0)
+      //   track_index -= 1;
+      // else track_index = track_list.length;
+      // loadTrack(track_index);
+      // playTrack();
     }
 
     function seekTo() {
-      seekto = curr_track.duration * (seek_slider.value / 100);
-      curr_track.currentTime = seekto;
+
+      seekto = duration * (seek_slider.value / 100);
+      player.seek(seekto * 1000).then(() => {
+        console.log('Changed position!');
+
+      });
+      
+      
+      // seek_slider.value = seekPosition;
     }
 
     function setVolume() {
-      curr_track.volume = volume_slider.value / 100;
+      player.setVolume(volume_slider.value / 100);
     }
 
     function seekUpdate() {
       let seekPosition = 0;
-
-      // player.getCurrentState().then(response => {
-      //   curr_track.currentTime=Math.floor(response.position/1000)
-      //   curr_track.duration=300
-      //   console.log(response)
-      // });
+      player.getCurrentState().then(response => {
+        let currentTime=Math.floor(response.position/1000)
+        duration=Math.floor(response.duration/1000)
+      });
 
       // Check if the current track duration is a legible number
-      if (!isNaN(curr_track.duration)) {
-        seekPosition = curr_track.currentTime * (100 / curr_track.duration);
+      if (!isNaN(duration)) {
+        seekPosition = currentTime * (100 / duration);
         seek_slider.value = seekPosition;
 
         // Calculate the time left and the total duration
-        let currentMinutes = Math.floor(curr_track.currentTime / 60);
-        let currentSeconds = Math.floor(curr_track.currentTime - currentMinutes * 60);
-        let durationMinutes = Math.floor(curr_track.duration / 60);
-        let durationSeconds = Math.floor(curr_track.duration - durationMinutes * 60);
+        let currentMinutes = Math.floor(currentTime / 60);
+        let currentSeconds = Math.floor(currentTime - currentMinutes * 60);
+        let durationMinutes = Math.floor(duration / 60);
+        let durationSeconds = Math.floor(duration - durationMinutes * 60);
 
         // Adding a zero to the single digit time values
         if (currentSeconds < 10) { currentSeconds = "0" + currentSeconds; }
