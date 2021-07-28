@@ -38,7 +38,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=client_id, 
 
 @app.route('/')
 def get_token():
-	f = { "response_type":"code","client_id":client_id,"redirect_uri":redirect_uri,"scope":scope}
+	f = { "response_type":"code",
+			"client_id":client_id,
+			"redirect_uri":redirect_uri,
+			"scope":scope
+		}
 	url = 'https://accounts.spotify.com/authorize'
 	return redirect(url + '?' + urllib.parse.urlencode(f))
 
@@ -48,7 +52,12 @@ def return_token():
 	varify_code = request.args.get("code")
 	url = 'https://accounts.spotify.com/api/token'
 	grant_type = 'authorization_code'
-	body = {"code": varify_code,"redirect_uri": redirect_uri,"grant_type":grant_type,"client_id":client_id, "client_secret":client_secret}
+	body = {"code": varify_code,
+			"redirect_uri": redirect_uri,
+			"grant_type":grant_type,
+			"client_id":client_id,
+			"client_secret":client_secret
+			}
 	
 	res = requests.post(url,data = body)
 	res = res.json()
