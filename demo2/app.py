@@ -32,6 +32,7 @@ redirect_uri = 'http://localhost:5000/callback'
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing app-remote-control streaming user-library-read user-library-modify'
 
 access_token = None
+refresh_token = None
 
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=client_id, client_secret=client_secret))
 
@@ -50,13 +51,29 @@ def return_token():
 	body = {"code": varify_code,"redirect_uri": redirect_uri,"grant_type":grant_type,"client_id":client_id, "client_secret":client_secret}
 	
 	res = requests.post(url,data = body)
-	
 	res = res.json()
+
 	global access_token
+	global refresh_token
 	access_token = res["access_token"]
+	refresh_token = res["refresh_token"]
 	
 	return 'input episode id to url'
 
+@app.route('/refresh_token')
+def refresh_token():
+	
+	url = 'https://accounts.spotify.com/api/token'
+	grant_type = 'refresh_token'
+	body = {"grant_type":grant_type,"refresh_token":refresh_token,"client_id":client_id, "client_secret":client_secret}
+	
+	res = requests.post(url,data = body)
+	res = res.json()
+	
+	global access_token
+	access_token = res['access_token']
+	
+	return 'token has refreshed'
 
 # Initialize Flask.
 
