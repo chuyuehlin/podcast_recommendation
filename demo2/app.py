@@ -87,8 +87,12 @@ def refresh_token():
 # Initialize Flask.
 
 #Route to stream music
-@app.route('/<string:stream_id>')
-def streammp3(stream_id):
+@app.route('/<string:query>')
+def streammp3(query):
+    outcome = requests.get('http://localhost:9200/episodes/_search?q='+query)
+    outcome = outcome.json()
+    stream_id = outcome["hits"]["hits"][0]["_source"]["episode_uri"][16:]
+
     res = sp.episode(stream_id,market='US')
     print(res['audio_preview_url'])
     print(res['description'])

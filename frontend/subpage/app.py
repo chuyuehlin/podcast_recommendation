@@ -87,20 +87,23 @@ def refresh_token():
 # Initialize Flask.
 
 #Route to stream music
-@app.route('/<string:stream_id>')
-def streammp3(stream_id):
-    res = sp.episode(stream_id,market='US')
-    print(res['audio_preview_url'])
-    print(res['description'])
-    print(res['images'][1]['url'])
-                
-    return render_template('index.html', image=res['images'][1]['url'], path=res['audio_preview_url'], name=res['name'], artist=res['show']['publisher'], des=res['description'], episode_id=stream_id, access_token=access_token)
+@app.route('/<string:query>')
+def streammp3(query):
+	outcome = requests.get('http://localhost:9200/episodes/_search?q='+query)
+	outcome = outcome.json()
+	stream_id = outcome["hits"]["hits"][0]["_source"]["episode_uri"][16:]
+	res = sp.episode(stream_id,market='US')
+	print(res['audio_preview_url'])
+	print(res['description'])
+	print(res['images'][1]['url'])
+				
+	return render_template('index.html', image=res['images'][1]['url'], path=res['audio_preview_url'], name=res['name'], artist=res['show']['publisher'], des=res['description'], episode_id=stream_id, access_token=access_token)
 
 #launch a Tornado server with HTTPServer.
 if __name__ == "__main__":
-    port = 5000
-    http_server = HTTPServer(WSGIContainer(app))
-    logging.debug("Started Server, Kindly visit http://localhost:" + str(port))
-    http_server.listen(port)
-    IOLoop.instance().start()
-    
+	port = 5000
+	http_server = HTTPServer(WSGIContainer(app))
+	logging.debug("Started Server, Kindly visit http://localhost:" + str(port))
+	http_server.listen(port)
+	IOLoop.instance().start()
+	
