@@ -12,6 +12,10 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
 
+from googlesearch import search
+import yake
+import wikipediaapi
+
 #Debug logger
 import logging 
 root = logging.getLogger()
@@ -99,6 +103,38 @@ def streammp3(query):
     print(res['images'][1]['url'])
                 
     return render_template('player.html', image=res['images'][1]['url'], path=res['audio_preview_url'], name=res['name'], artist=res['show']['publisher'], des=res['description'], episode_id=stream_id, access_token=access_token)
+
+@app.route('/recommend/<string:ID>/<string:time>/')
+def recommend(ID,time):
+	outcome = requests.get('http://localhost:9200/episodes/_doc/'+ID)
+	outcome = outcome.json()
+	text = outcome["_source"]["transcript"][time]
+	
+	kw_extractor = yake.KeywordExtractor(n=2, top=1)
+	keywords = kw_extractor.extract_keywords(text)
+	
+	websites = []
+
+	for kw in keywords:
+		
+		if len(search(kw[0], num_results=1))>0:
+			websites.append(search(kw[0], num_results=1)[0])
+		
+		
+		wiki_wiki = wikipediaapi.Wikipedia('en')
+		wiki_page = wiki_wiki.page(kw[0])
+		if wiki_page.exists():
+			websites.append(wiki_page.fullurl)
+		
+		
+		key_word = kw[0].replace(" ", "&")	
+		url = 'https://api.currentsapi.services/v1/search?keywords=' + key_word + '&apiKey=jwq2zz6rcBmPByF_neecIR9GM0joS4KKfzZdYf_Oj-326HQR'
+		r = requests.get(url)
+		r = r.json()
+		if r['status']=="ok" and len(r['news'])>0:
+			websites.append(r['news'][0]['url'])
+		
+		return {"result":websites}
 
 #launch a Tornado server with HTTPServer.
 if __name__ == "__main__":
