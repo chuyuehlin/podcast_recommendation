@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewpoint" content="width=device-width, initial-scale=1">
+        <!-- BootStrap CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <!-- with jQuery and popper.js -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+        <!-- src 
+        <script src="js/main.js"></script>
+        -->
+        <link rel="stylesheet" href="assets/css/main.css" />
+        
+
+        <script src="https://sdk.scdn.co/spotify-player.js"></script>
+        <!-- js script -->
+        <script>
+            const playfromo = (deviceID, token) => {
+                const playaURL = `https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`;
+                const d = { uris: ['spotify:episode:{{ episode_id }}'], position_ms: 0 };
+                fetch(playaURL, {
+                    method: 'PUT',
+                    body: JSON.stringify(d),
+                    headers: new Headers({
+                        Authorization: `Bearer ${token}`,
+                    }),
+                })
+                    .then((res) => res.json())
+                    .catch((error) => console.error('Error:', error))
+                    .then((response) => console.log('Success:', response));
+            }
+    
+            const play = (deviceID, token) => {
+                const playaURL = `https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`;
+                const d = { uris: ['spotify:episode:{{ episode_id }}'] };
+                fetch(playaURL, {
+                    method: 'PUT',
+                    body: JSON.stringify(d),
+                    headers: new Headers({
+                        Authorization: `Bearer ${token}`,
+                    }),
+                })
+                    .then((res) => res.json())
+                    .catch((error) => console.error('Error:', error))
+                    .then((response) => console.log('Success:', response));
+            }
+    
+    
+            const seek = (deviceID, token) => {
+                const playaURL = `https://api.spotify.com/v1/me/player/seek?position_ms=0&device_id=${deviceID}`;
+                fetch(playaURL, {
+                    method: 'PUT',
+                    headers: new Headers({
+                        Authorization: `Bearer ${token}`,
+                    }),
+                })
+                    .then((res) => res.json())
+                    .catch((error) => console.error('Error:', error))
+                    .then((response) => console.log('Success:', response));
+            }
+    
+    
+    
+            window.onSpotifyWebPlaybackSDKReady = () => {
+                token = '{{access_token}}';
+                player = new Spotify.Player({
+                    name: 'Hello',
+                    getOAuthToken: cb => { cb(token); }
+                });
+    
+                // Error handling
+                player.addListener('initialization_error', ({ message }) => { console.error(message); });
+                player.addListener('authentication_error', ({ message }) => { console.error(message); });
+                player.addListener('account_error', ({ message }) => { console.error(message); });
+                player.addListener('playback_error', ({ message }) => { console.error(message); });
+    
+                // Playback status updates
+                player.addListener('player_state_changed', state => { console.log(state); });
+    
+                // Ready
+                player.addListener('ready', ({ device_id }) => {
+                    playfromo(device_id, token)
+                    did = device_id
+                    // player.resume()
+                    console.log('Ready with Device ID', device_id);
+                });
+    
+                // Not Ready
+                player.addListener('not_ready', ({ device_id }) => {
+                    console.log('Device ID has gone offline', device_id);
+                });
+                console.log(player)
+                // Connect to the player!
+                player.connect();
+            };
+    
+            // let now_playing = document.querySelector(".now-playing");
+            let track_art = document.querySelector(".track-art");
+            let track_name = document.querySelector(".track-name");
+            let track_artist = document.querySelector(".track-artist");
+    
+            let playpause_btn = document.querySelector(".playpause-track");
+            let next_btn = document.querySelector(".next-track");
+            let prev_btn = document.querySelector(".prev-track");
+    
+            let seek_slider = document.querySelector(".seek_slider");
+            let volume_slider = document.querySelector(".volume_slider");
+            let curr_time = document.querySelector(".current-time");
+            let total_duration = document.querySelector(".total-duration");
+    
+            let track_index = 0;
+            let isPlaying = false;
+            let updateTimer;
+            let duration;
+            let currentTime;
+            // Create new audio element
+            // let curr_track = document.createElement('audio');
+    
+            // Define the tracks that have to be played
+            let track_list = [{
+                name: "{{ name }}",
+                artist: "{{ artist }}",
+                image: "{{ image }}",
+                path: "{{ path }}",
+            }];
+    
+            function loadTrack(track_index) {
+                clearInterval(updateTimer);
+                resetValues();
+    
+                // Load a new track
+                // curr_track.src = track_list[track_index].path;
+                // curr_track.load();
+    
+                // Update details of the track
+                track_art.style.backgroundImage = "url(" + track_list[track_index].image + ")";
+                track_name.textContent = track_list[track_index].name;
+                track_artist.textContent = track_list[track_index].artist;
+                // now_playing.textContent = "PLAYING " + (track_index + 1) + " OF " + track_list.length;
+    
+                // Set an interval of 1000 milliseconds for updating the seek slider
+                updateTimer = setInterval(seekUpdate, 500);
+    
+                // Move to the next track if the current one finishes playing
+                // curr_track.addEventListener("ended", nextTrack);
+    
+                // Apply a random background color
+                //random_bg_color();
+            }
+    
+    
+            // Reset Values
+            function resetValues() {
+                curr_time.textContent = "00:00";
+                total_duration.textContent = "00:00";
+                seek_slider.value = 0;
+            }
+    
+            function playpauseTrack() {
+                if (!isPlaying) playTrack();
+                else pauseTrack();
+            }
+    
+            function playTrack() {
+    
+                play(did, token);
+                isPlaying = true;
+    
+                // Replace icon with the pause icon
+                playpause_btn.innerHTML = '<i class="fa fa-pause-circle fa-5x"></i>';
+            }
+    
+            function pauseTrack() {
+                player.pause()
+                isPlaying = false;
+    
+                // Replace icon with the play icon
+                playpause_btn.innerHTML = '<i class="fa fa-play-circle fa-5x"></i>';;
+            }
+    
+            function nextTrack() {
+                // if (track_index < track_list.length - 1)
+                //   track_index += 1;
+                // else track_index = 0;
+                // loadTrack(track_index);
+                // playTrack();
+            }
+    
+            function prevTrack() {
+                // if (track_index > 0)
+                //   track_index -= 1;
+                // else track_index = track_list.length;
+                // loadTrack(track_index);
+                // playTrack();
+            }
+    
+            function seekTo() {
+    
+                seekto = duration * (seek_slider.value / 100);
+                player.seek(seekto * 1000).then(() => {
+                    console.log('Changed position!');
+                });
+    
+                // seek_slider.value = seekPosition;
+            }
+    
+            function setVolume() {
+                player.setVolume(volume_slider.value / 100);
+            }
+    
+            function seekUpdate() {
+                let seekPosition = 0;
+                player.getCurrentState().then(response => {
+                    currentTime = Math.floor(response.position / 1000)
+                    duration = Math.floor(response.duration / 1000)
+                });
+    
+                // Check if the current track duration is a legible number
+                if (!isNaN(duration)) {
+                    seekPosition = currentTime * (100 / duration);
+                    seek_slider.value = seekPosition;
+    
+                    // Calculate the time left and the total duration
+                    let currentMinutes = Math.floor(currentTime / 60);
+                    let currentSeconds = Math.floor(currentTime - currentMinutes * 60);
+                    let durationMinutes = Math.floor(duration / 60);
+                    let durationSeconds = Math.floor(duration - durationMinutes * 60);
+    
+                    // Adding a zero to the single digit time values
+                    if (currentSeconds < 10) { currentSeconds = "0" + currentSeconds; }
+                    if (durationSeconds < 10) { durationSeconds = "0" + durationSeconds; }
+                    if (currentMinutes < 10) { currentMinutes = "0" + currentMinutes; }
+                    if (durationMinutes < 10) { durationMinutes = "0" + durationMinutes; }
+    
+                    curr_time.textContent = currentMinutes + ":" + currentSeconds;
+                    total_duration.textContent = durationMinutes + ":" + durationSeconds;
+                }
+            }
+    
+            // Load the first track in the tracklist
+            loadTrack(track_index);
+        </script>
+        <!-- css -->
+        <style>
+            body {
+                background-color: #D0EFFE;
+    
+                /* Smoothly transition the background color */
+                transition: background-color .5s;
+            }
+    
+            .player {
+                height: 95vh;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                justify-content: center;
+            }
+    
+            .details {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                justify-content: center;
+                margin-top: 25px;
+            }
+    
+            .track-art {
+                margin: 25px;
+                height: 250px;
+                width: 250px;
+                background-image: url("https://images.pexels.com/photos/262034/pexels-photo-262034.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260");
+                background-size: cover;
+                border-radius: 15%;
+            }
+    
+            .now-playing {
+                font-size: 1rem;
+            }
+    
+            .track-name {
+                font-size: 2rem;
+            }
+    
+            .track-artist {
+                font-size: 1.5rem;
+            }
+    
+            .buttons {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+    
+            .playpause-track,
+            .prev-track,
+            .next-track {
+                padding: 25px;
+                opacity: 0.8;
+    
+                /* Smoothly transition the opacity */
+                transition: opacity .2s;
+            }
+    
+            .playpause-track:hover,
+            .prev-track:hover,
+            .next-track:hover {
+                opacity: 1.0;
+            }
+    
+            .slider_container {
+                width: 75%;
+                max-width: 400px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            /* Modify the appearance of the slider */
+            .seek_slider,
+            .volume_slider {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                height: 5px;
+                background: black;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+            }
+    
+            /* Modify the appearance of the slider thumb */
+            .seek_slider::-webkit-slider-thumb,
+            .volume_slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                width: 15px;
+                height: 15px;
+                background: white;
+                cursor: pointer;
+                border-radius: 50%;
+            }
+    
+            .seek_slider:hover,
+            .volume_slider:hover {
+                opacity: 1.0;
+            }
+    
+            .seek_slider {
+                width: 60%;
+            }
+    
+            .volume_slider {
+                width: 30%;
+            }
+    
+            .current-time,
+            .total-duration {
+                padding: 10px;
+            }
+    
+            i.fa-volume-down,
+            i.fa-volume-up {
+                padding: 10px;
+            }
+    
+            i.fa-play-circle,
+            i.fa-pause-circle,
+            i.fa-step-forward,
+            i.fa-step-backward {
+                cursor: pointer;
+            }
+        </style>
+
+        
+
+
+    </head>
+    <body>
+        <!-- fixed top navbar -->
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-secondary">
+            <div class="d-flex justify-content-between container-fluid">
+                <div class="navbar-brand text-white" href="#">Podcast推薦系統</div>
+                <div class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+                <div class="navbar-nav text-align-end">
+                    <button class="btn btn-dark" href="#">Login</button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <!-- fixed left side toolbar -->
+                <div class="col-1 bg-secondary">
+                    <div class="row sticky-top">
+                        <div class="p-2 mt-5 pt-3 text-center">
+                            <button class="btn btn-light col-10 text-dark" type="button">首頁</button>
+                        </div>
+                        <div class="p-2 t-2 text-center">
+                            <button class="btn btn-light col-10 text-dark" type="button">我的收藏</button>
+                        </div>
+                        <div class="p-2 t-2 text-center">
+                            <button class="btn btn-light col-10 text-dark" type="button">設定</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- middle content -->
+                <div class="col-9 bg-light"> 
+                   <div class="container"> 
+                    <!-- intro -->
+                    <article id="portfolio" class="wrapper style3">
+                        <div class="container">
+                            <header>
+                                <h2>Welcome to our Podcast Recommendation System</h2>
+                                <p>Just choose what you want to listen and enjoy of it.</p>
+                            </header>
+                            <div class="row">
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="file:///C:/Users/Jenny/podcast_recommendation/frontend/subpage/templates/index.html" class="image featured"><img src="images/pic01.jpg" alt="" /></a>
+                                        <h3><a href="#">Magna feugiat</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="#" class="image featured"><img src="images/pic02.jpg" alt="" /></a>
+                                        <h3><a href="#">Veroeros primis</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="#" class="image featured"><img src="images/pic03.jpg" alt="" /></a>
+                                        <h3><a href="#">Lorem ipsum</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>
+                                        <h3><a href="#">Tempus dolore</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="#" class="image featured"><img src="images/pic05.jpg" alt="" /></a>
+                                        <h3><a href="#">Feugiat aliquam</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                                <div class="col-4 col-6-medium col-12-small">
+                                    <article class="box style2">
+                                        <a href="#" class="image featured"><img src="images/pic06.jpg" alt="" /></a>
+                                        <h3><a href="#">Sed amet ornare</a></h3>
+                                        <p>Ornare nulla proin odio consequat.</p>
+                                    </article>
+                                </div>
+                            </div>
+                            <footer>
+                                <p>Lorem ipsum dolor sit sapien vestibulum ipsum primis?</p>
+                                <a href="#contact" class="button large scrolly">Get in touch with me</a>
+                            </footer>
+                        </div>
+                    </article>
+                    <!-- <div class="row mt-5 pt-5" id="intro">
+                        <div class="col-4" id="image">
+                            <figure class="figure">
+                                <img src="https://www.nicepng.com/png/full/6-68488_angery-popuko-pop-team-epic-meme.png" class="figure-img img-fluid rounded">
+                            </figure>
+                        </div>
+                        <div class="col-8">
+                            <div class="row m-2" id="name">
+                                <h2>Popteamepic</h2>
+                            </div>
+                            <div class="row m-2" id="content">
+                                <h5>
+                                    《pop子和pipi美的日常》（日語：ポプテピピック，中國大陸譯作「pop子和pipi美的日常」，香港和臺灣譯作「POP TEAM EPIC」）是由大川bkub創作的日本搞笑四格漫畫作品，自2014年8月在竹書房的網路漫畫發佈站《漫畫人生WIN》連載[12]。本作品一度在2015年11月結束連載[13]，並於同年12月發行單行本[14]。2016年2月18日，大川bkub開始在同網站連載新作品《星色Girl Drop》（☆色ガールドロップ）[15]，翌日得知該作品實際上是《pop子和pipi美的日常》[16]，該連載後來在2017年4月30日結束。2017年10月10日，漫畫第三部開始連載[17]。電視動畫於2018年1月6日至3月24日播出[18]，電視特別篇於2019年4月1日播出[19][20]，全14集。 
+                                </h5>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- image buttons -->
+                    <!-- <div class="row" id="imagebuttons">
+                      <div class="col-4">
+                        <div class="row justify-content-between">
+                            <div class="col-3" id="image-like">
+                                <a href="#">
+                                    <img src="https://img.icons8.com/ios-filled/452/facebook-like.png" class="figure-img img-fluid rounded">
+                                </a>
+                            </div>
+                            <div class="col-3" id="image-play">
+                                <a href="#">
+                                    <img src="https://cdn.icon-icons.com/icons2/2226/PNG/512/play_icon_134504.png" class="figure-img img-fluid rounded">
+                                </a>
+                            </div>
+                            <div class="col-3" id="image-download">
+                                <a href="#">
+                                    <img src="https://cdn.icon-icons.com/icons2/2348/PNG/512/download_icon_143099.png" class="figure-img img-fluid rounded">
+                                </a>
+                            </div>
+                        </div>
+                      </div>
+                    </div> -->
+                    <!-- dividor -->
+                    <!-- <hr>
+                    <div class="row" id="video">
+                        <video style="width: 100%;" controls>
+                            Your browser does not support HTML video.
+                        </video>
+                    </div> -->
+                    <!-- dividor -->
+                    <!-- <hr> -->
+                    <!-- recommend & comment navtab -->
+                    <!-- <div class="row mb-5" id="recommend&comment">
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                              <button class="nav-link active" id="nav-recommend-tab" data-bs-toggle="tab" data-bs-target="#nav-recommend" type="button" role="tab" aria-controls="nav-home" aria-selected="true">推薦文章</button>
+                              <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">留言</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade active show" id="nav-recommend" role="tabpanel" aria-labelledby="nav-recommend-tab">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a class="text-dark"  href="#">Somelink to webiste A</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a class="text-dark"  href="#">Somelink to webiste B</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a class="text-dark"  href="#">Somelink to webiste C</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a class="text-dark" href="#">Somelink to webiste D</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <figure class="image">
+                                                    <img src="https://avatars.githubusercontent.com/u/37442154?v=4" class="figure-img img-fluid" style="border-radius: 50%;">
+                                                </figure>
+                                            </div>
+                                            <div class="col-11 text-align-center">
+                                                <a>Wonderful!</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <figure class="image">
+                                                    <img src="https://i.imgur.com/9EfCYw3.png" class="figure-img img-fluid" style="border-radius: 50%;">
+                                                </figure>
+                                            </div>
+                                            <div class="col-11 text-align-center">
+                                                <a>騙人的吧</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <figure class="image">
+                                                    <img src="https://facepic.qidian.com/qd_face/349573/a7396682/0.png" class="figure-img img-fluid" style="border-radius: 50%;">
+                                                </figure>
+                                            </div>
+                                            <div class="col-11 text-align-center">
+                                                <a>???</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>                                                  
+                    </div> -->
+                  </div> 
+                </div>
+                <!-- right fixed side playaudio -->
+                <div class="col-2 sticky-top">
+                  
+                </div>
+              </div>
+        </div>
+
+    	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+    </body>
+</html>
