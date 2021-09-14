@@ -11,7 +11,7 @@ from tornado.ioloop import IOLoop
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
-
+from bing_image_downloader.downloader import download, get_all_link
 from googlesearch import search
 import yake
 import wikipediaapi
@@ -135,6 +135,36 @@ def recommend(ID,time):
 			websites.append(r['news'][0]['url'])
 		
 		return {"result":websites}
+
+@app.route('/recommend_image/<string:ID>/<string:time>/')
+def recommend_image(ID,time):
+	time=str(int(time)-(int(time)%120))                         
+	outcome = requests.get('http://localhost:9200/episodes/_doc/'+ID)
+	outcome = outcome.json()
+	text = outcome["_source"]["transcript"][time]
+	language = "en"
+	max_ngram_size = 5 #8
+	deduplication_thresold = 0.5
+	deduplication_algo = 'levs' #levs seqm jaro
+	windowSize = 10
+	numOfKeywords = 5
+	
+	
+
+	custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_thresold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
+	keywords = custom_kw_extractor.extract_keywords(text)
+	links=[]
+	for i in keywords:
+		tmp=[]
+		print(i[0],i[1])
+
+		query_string = i[0]
+		tmp.append(i[0])
+		# tmp.append(paths[0][i[0]])
+		tmp.append(get_all_link(query_string, limit=2,  output_dir='dataset', adult_filter_off=True, force_replace=False, timeout=60, verbose=False))
+		print(tmp)
+		links.append(tmp)
+	return {"result":links} 
 
 #launch a Tornado server with HTTPServer.
 if __name__ == "__main__":
