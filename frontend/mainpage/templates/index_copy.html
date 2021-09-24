@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- InstantSearch CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/templates/basic_search.css" />
+    <link rel="stylesheet" href="./reset.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch@0.3.2/dist/instant-meilisearch.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4"></script>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <main>
+        <div class="left">
+          <div style="vertical-align: middle; display: table-cell;" id="searchbox"></div>
+        </div>
+        <div id="hits"></div>
+        <div style="clear:both;"></div>
+    </main>
+  </body>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    .ais-SearchBox { margin: 1em 0; }
+  </style>
+  <script>
+    const search = instantsearch({
+      // MeiliSearch Index name
+      indexName: "podcast",
+      // MeiliSearch Server url
+      searchClient: instantMeiliSearch(
+        "http://localhost:7700"
+      )
+    });
+
+    search.addWidgets([
+      instantsearch.widgets.searchBox({
+        // html id of your searchbox
+        container: "#searchbox",
+        // what will appear when nothing is typed
+        placeholder: "Search your podcast ...",
+        // input auto focus (default false)
+        autofocus: true,
+        // searchAsYouType (default true)
+        // showSubmit(button) (default true)
+        // showLoadingIndicator (default false)
+      }),
+      instantsearch.widgets.configure({ 
+        hitsPerPage: 5
+      }),
+      instantsearch.widgets.infiniteHits({
+        container: "#hits",
+        templates: {
+          empty: 'No results for <q>{{ query }}</q>',
+          showMoreText: `
+          <div>
+              <h4>show more results</h4>
+          </div>`,
+          item(hit){
+            return`
+              <div class="row">
+                <div class="col-5" style="height:260px;">
+                  <img src="{{poster}}" style="height:250px; width:250px;"/>
+                </div>
+                <div class="col-5">
+                  <h3 class="hit-episode" style="overflow-x:hidden; height:65px;">
+                    ${instantsearch.highlight({ attribute: 'episode_name', highlightedTagName: 'mark', hit })}
+                  </h3>
+                  <h4 class="hit-publisher" style="overflow-x:hidden; height:40px;">
+                    ${instantsearch.highlight({ attribute: 'publisher', highlightedTagName: 'mark', hit })}
+                  </h4>
+                  <audio controls>
+                      <source src="{{episode_audio}}" type="audio/x-m4a">
+                      <source src="{{episode_audio}}" type="audio/mp3">
+                        Your browser does not support the audio tag.
+                  </audio>                
+              </div>`;
+          }
+        }
+      })
+    ]);
+    search.start();
+  </script>
+</html>

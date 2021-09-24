@@ -1,0 +1,24 @@
+.right{
+    width: 50%;
+    height: 500px;
+    float:left;
+}
+.left{
+    background: rgb(241, 241, 241);
+    border-radius: 0.5rem;
+    width: 55%;
+    height: 600px;
+    float:left;
+}
+.row{
+    background-color: red;
+    width: 35%;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+.ais-Highlight-highlighted {
+    font-size:20px;
+}
+
+
