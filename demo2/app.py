@@ -15,7 +15,7 @@ from bing_image_downloader.downloader import download, get_all_link
 from googlesearch import search
 import yake
 import wikipediaapi
-
+from keybert import KeyBERT
 #Debug logger
 import logging 
 root = logging.getLogger()
@@ -29,7 +29,7 @@ root.addHandler(ch)
 
 
 app = Flask(__name__)
-
+model = KeyBERT(model='paraphrase-MiniLM-L6-v2')
 #Route to stream music
 @app.route('/search/<string:query>')
 def search(query):
@@ -83,21 +83,27 @@ def recommend(ID,time):
 
 @app.route('/recommend_image/<string:ID>/<string:time>/')
 def recommend_image(ID,time):
-	time=str(int(time)-(int(time)%120))                         
-	outcome = requests.get('http://localhost:9200/episodes/_doc/'+ID)
+	outcome = requests.get('http://54.178.59.171:9200/episodes/_doc/'+ID)
 	outcome = outcome.json()
-	text = outcome["_source"]["transcript"][time]
-	language = "en"
-	max_ngram_size = 5 #8
-	deduplication_thresold = 0.5
-	deduplication_algo = 'levs' #levs seqm jaro
-	windowSize = 10
-	numOfKeywords = 5
-	
-	
-
-	custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_thresold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
-	keywords = custom_kw_extractor.extract_keywords(text)
+	outcome = outcome["_source"]
+	interval=30  #可調整
+	start = int(float(time))-interval
+	end = int(float(time))+interval
+	if start<0:
+		start=0
+		end=interval*2
+	start_t = str(start-(start%120))
+	end_t = str(end-(end%120))
+	start_fragment = outcome["transcript"][start_t]
+	try:
+		end_fragment = outcome["transcript"][end_t]
+	except:
+		end_fragment = ""
+	start_fragment = start_fragment.split(" ")
+	end_fragment = end_fragment.split(" ")
+	text = start_fragment[int(len(start_fragment)*(start%120)/120):] + end_fragment[:int(len(end_fragment)*(end%120)/120)]
+	text = " ".join(text)
+	keywords = model.extract_keywords(text, keyphrase_ngram_range=(1, 2), top_n=4) #ngram影響速度 
 	links=[]
 	for i in keywords:
 		tmp=[]
@@ -106,7 +112,7 @@ def recommend_image(ID,time):
 		query_string = i[0]
 		tmp.append(i[0])
 		# tmp.append(paths[0][i[0]])
-		tmp.append(get_all_link(query_string, limit=2,  output_dir='dataset', adult_filter_off=True, force_replace=False, timeout=60, verbose=False))
+		tmp.append(get_all_link(query_string, limit=4,  output_dir='dataset', adult_filter_off=False, force_replace=False, timeout=60, verbose=False))  #adult可改
 		print(tmp)
 		links.append(tmp)
 	return {"result":links} 
