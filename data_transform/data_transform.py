@@ -3,12 +3,10 @@ import csv
 import glob
 import json
 from tqdm import tqdm
-
-#逐字稿整理
 All = {}
 for filename in tqdm(glob.iglob(r'/Users/chuyueh/課程/專題/spotify-podcasts-2020/*/*/*/*/*.json', recursive=True)):
-	Id = filename[-27:-5]
 	f = open(filename)
+	Id = filename[-27:-5]
 	f = json.load(f)
 	out = {}
 	starttime=0
@@ -26,8 +24,40 @@ print('done')
 
 
 # Create the elasticsearch client.
-es = Elasticsearch(host = "localhost", port = 9200)
+es = Elasticsearch(host = "127.0.0.1", port = 9200, timeout=60)
 insert = []
+
+
+with open('all.json') as f:
+	f = json.load(f)
+	for row in f:
+		if row['episode_uri'] in All:
+			tmp={
+				"_index": "episodes",
+				"_op_type": "index",
+				"_id": row['episode_uri'],
+				"_source": {
+					"show_uri":row["show_uri"],
+					"show_name":row["show_name"],
+					"show_description":row["show_description"],
+					"publisher":row["publisher"],
+					"language":row["language"],
+					"episode_uri":row["episode_uri"],	
+					"episode_name":row["episode_name"],
+					"episode_audio":row['episode_audio'],
+					"episode_description":row["episode_description"],	
+					"poster":row["poster"],
+					"duration":row["duration"],	
+					"transcript":All[row['episode_uri']]
+				}
+			}	
+			insert.append(tmp)
+	print(len(insert))
+	helpers.bulk(es, insert)
+
+
+'''
+
 # Open csv file and bulk upload
 with open('metadata.tsv') as f:
 	reader = csv.reader(f, delimiter='\t')
@@ -55,3 +85,4 @@ with open('metadata.tsv') as f:
 				}
 			})
 	helpers.bulk(es, insert)
+'''
