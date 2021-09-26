@@ -18,7 +18,7 @@
         <div class="left">
           <div style="vertical-align: middle; display: table-cell;" id="searchbox"></div>
         </div>
-        <div id="hits"></div>
+        <div class="hits" id="hits"></div>
         <div style="clear:both;"></div>
     </main>
   </body>
@@ -62,21 +62,22 @@
           item(hit){
             return`
               <div class="row">
-                <div class="col-5" style="height:260px;">
-                  <img src="{{poster}}" style="height:250px; width:250px;"/>
+                <div class="front">
+                  <div class="img">
+                    <img src="${hit.poster}"/>
+                  </div>
+                  <div class="info">
+                    <p class="hit-episode">
+                      ${instantsearch.highlight({ attribute: 'episode_name', highlightedTagName: 'mark', hit })}
+                    </p>
+                    <p class="hit-publisher">
+                      ${instantsearch.highlight({ attribute: 'publisher', highlightedTagName: 'mark', hit })}
+                    </p>
+                  </div>
                 </div>
-                <div class="col-5">
-                  <h3 class="hit-episode" style="overflow-x:hidden; height:65px;">
-                    ${instantsearch.highlight({ attribute: 'episode_name', highlightedTagName: 'mark', hit })}
-                  </h3>
-                  <h4 class="hit-publisher" style="overflow-x:hidden; height:40px;">
-                    ${instantsearch.highlight({ attribute: 'publisher', highlightedTagName: 'mark', hit })}
-                  </h4>
-                  <audio controls>
-                      <source src="{{episode_audio}}" type="audio/x-m4a">
-                      <source src="{{episode_audio}}" type="audio/mp3">
-                        Your browser does not support the audio tag.
-                  </audio>                
+                <div class="back">
+                    ${hit.episode_description}}
+                </div>             
               </div>`;
           }
         }
