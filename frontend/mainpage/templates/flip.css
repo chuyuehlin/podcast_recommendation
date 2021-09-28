@@ -1,0 +1,87 @@
+/* for card fliping */
+
+.flipcard {
+    /* center flipcard in item */
+    margin: auto;
+    background-color: transparent;
+    
+    /* size of flipcard */
+    width: 20em;
+    height: 25em;
+    /*  */
+    
+    perspective: 1000px;
+}
+
+.flipcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 1em 2em 0 rgba(0,0,0,0.2);
+}
+  
+.flipcard:hover .flipcard-inner {
+    transform: rotateY(180deg);
+}
+  
+.flipcard-front, .flipcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    /* safari */
+    -webkit-backface-visibility: hidden; 
+}
+  
+.flipcard-front {
+    background-color: white;
+    transform: rotateY(0deg);
+}
+  
+.flipcard-back {
+    z-index: -1;
+    background-color: white;
+    transform: rotateY(180deg);
+}
+
+
+/* for page -> item */
+
+img {
+    /* place center in container */
+    margin: auto;
+    max-width:100%;
+    max-height:100%;
+}
+
+/* margin between instantSearch items */
+.ais-InfiniteHits-item + .ais-InfiniteHits-item {
+    margin-top: 30px;
+}
+
+.ais-InfiniteHits-item {
+    margin: auto;
+}
+
+.hit-episode {
+    font-size: larger;
+}
+
+.hit-publisher {
+    font-size: small;
+}
+
+.hit-discription {
+    font-size: small;
+}
+
+
+/* for searchbox */
+.searchBar {
+    position: fixed;
+    left: 0%;
+    top: 50%;
+}
