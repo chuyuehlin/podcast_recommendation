@@ -1,5 +1,5 @@
 .main{
-    background: #ffffff;
+    background: white;
     position: absolute;
     left:0%;
     top:0%;
@@ -7,18 +7,39 @@
     right: 0%;
 }
 .left{
-    background: #111a24;
+    background: #21212e;
     left:5%;
     top:10%;
     bottom: 10%;
     right: 35%;
     border-radius: 1.5rem;
-    -webkit-filter: drop-shadow(0px 0px 12px #BCBCBC);
-    filter: drop-shadow(0px 0px 12px #BCBCBC);
+    -webkit-filter: drop-shadow(0px 0px 12px #c9c9c9);
+    filter: drop-shadow(0px 0px 12px #c9c9c9);
     
     width: 60%;
     float:left;
     position:fixed;
+}
+.ais-SearchBox-form{
+    top:200px;
+    position: absolute;
+}
+.ais-SearchBox-input{
+    position: absolute;
+    left:10%;
+    top:100px;
+    height: 55px;
+    width: 60%;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    padding: 0 60px 0 20px;
+    font-size: 18px;
+}
+.ais-SearchBox-reset{
+    position: absolute;
+    left:80%;
+    top:127.5px;
 }
 .hits{
     float:left;
@@ -45,12 +66,12 @@ li { list-style-type: none; }
     height: 420px;
     margin-bottom: 2.5rem;
     margin-top: 2.5rem;
-    -webkit-filter: drop-shadow(0px 0px 12px #BCBCBC);
-    filter: drop-shadow(0px 0px 12px #BCBCBC);
+    -webkit-filter: drop-shadow(0px 0px 12px #afafaf);
+    filter: drop-shadow(0px 0px 12px #afafaf);
 
     float: left;
     position: relative;
-    perspective: 1000px; 
+    perspective: 1000px;
 }
 .front,.back{
     width: 100%;
@@ -82,7 +103,24 @@ img{
     left: 5%;
     right: 5%;
 }
+.description{
+    visibility: hidden;
+    font-family: 'Nunito Sans', sans-serif;
+    position: absolute;
+    top:230px;
+    bottom: 30px;
+    font-size: 15px;
+    line-height: 24px;
+    color:#DEDEDE;
 
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+}
 .hit-publisher{
     font-family: 'Nunito Sans', sans-serif;
     position: absolute;
@@ -90,6 +128,14 @@ img{
     left:0%;
     font-size: 15px;
     color:#DEDEDE;
+
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    white-space: normal;
 }
 .hit-episode{
     font-family: 'Nunito Sans', sans-serif;
@@ -105,7 +151,7 @@ img{
     white-space: nowrap;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     white-space: normal;
 }
@@ -122,15 +168,47 @@ img{
 .back{  
     background-color: #26262e;
     transform: rotateY(-180deg);
+    display: none;
    
 }
-.row:hover .front{
-    transform: rotateY(180deg);
-    transition: transform 1s cubic-bezier(0,.5,.54,.99);
-} 
-.row:hover .back{
-    transform: rotateY(0deg);
-    transition: transform 1s cubic-bezier(0,.5,.54,.99);
+.row:hover img{
+    animation: img_shink 0.8s;
+    animation-fill-mode: forwards;
+}
+.row:hover .info{
+    animation: info_raise 0.8s;
+    animation-fill-mode: forwards;
+}
+.row:hover .description{
+    animation: description_show 0.8s;
+    animation-delay: 0.8s;
+    animation-fill-mode: forwards;
+}
+@keyframes img_shink {
+    100% { 
+        height:100px; 
+        width:100px;
+        border-radius: 0.3em;
+        
+     }
+}
+@keyframes info_raise {
+    100% { 
+        top:120px;
+        bottom: 220px;
+     }
+}
+@keyframes description_show {
+    0%{
+        visibility: visible;
+        color:#161629;
+    }
+    100% { 
+        visibility: visible;
+        color:#DEDEDE;
+        top:220px;
+        bottom: 20px;
+    }
 }
 .ais-InfiniteHits-loadMore{
     display:none;
