@@ -50,6 +50,7 @@
         placeholder: "Search your podcast ...",
         // input auto focus (default false)
         autofocus: true,
+        showSubmit: false,
         // searchAsYouType (default true)
         // showSubmit(button) (default true)
         // showLoadingIndicator (default false)
@@ -74,16 +75,16 @@
                     </div>
                     <div class="info">
                       <p class="hit-publisher">
-                        ${instantsearch.highlight({ attribute: 'publisher', highlightedTagName: 'mark', hit })}
+                        ${instantsearch.highlight({ attribute: 'show_name', highlightedTagName: 'mark', hit })}
                       </p>
                       <p class="hit-episode">
                         ${instantsearch.highlight({ attribute: 'episode_name', highlightedTagName: 'mark', hit })}
                       </p>
                     </div>
-                </div>
-                <div class="back">
-                    ${hit.episode_description}}
-                </div>             
+                    <div class="description">
+                      ${hit.episode_description}
+                    </div> 
+                </div>            
               </div>`;
           }
         }
