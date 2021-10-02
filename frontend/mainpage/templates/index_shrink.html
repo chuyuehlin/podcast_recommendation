@@ -19,7 +19,7 @@
   <body>
     <main class="main">
         <div class="left">
-          <div id="projectName">Fancy Search</div>
+          <div id="projectName">Fancy Search Name</div>
           <div id="searchbox"></div>
         </div>
         <div class="hits" id="hits">
@@ -57,7 +57,7 @@
         // showLoadingIndicator (default false)
       }),
       instantsearch.widgets.configure({ 
-        hitsPerPage: 20
+        hitsPerPage: 10
       }),
       instantsearch.widgets.infiniteHits({
         container: "#hits",
@@ -73,19 +73,19 @@
                 <audio class="audio" id="${hit.episode_uri}">
                   <source src="${hit.episode_audio}" type="audio/x-m4a" />
                 </audio>   
-                <div class="front">
+                <div class="back">
                   <div class="img">
                     <img class="poster" src="${hit.poster}"/>
                     <img class="stopButton" src="./stop.webp" 
                       id = "${hit.episode_uri}_stopButton"
                     />
                     <img class="playButton" src="./play.png" 
-                      id = "${hit.episode_uri}_playButton"
-                      onClick="audio = document.getElementById('${hit.episode_uri}');
-                        audio.volume = 0.05;
+                      id="${hit.episode_uri}_playButton"
+                      onclick="audio = document.getElementById('${hit.episode_uri}');
                         playBtn = document.getElementById('${hit.episode_uri}_playButton');
                         stopBtn = document.getElementById('${hit.episode_uri}_stopButton');
-                        if(playBtn.style.opacity != 0){
+                        if (playBtn.style.opacity != 0) {
+                          audio.volume = 0.3;
                           audio.play();
                           playBtn.style.opacity = 0;
                           stopBtn.style.opacity = 0.3;
@@ -93,8 +93,8 @@
                           audio.pause();
                           playBtn.style.opacity = 0.3;
                           stopBtn.style.opacity = 0;
-                        }
-                      " 
+                        };
+                      "
                     />
                   </div>
                   <div class="info">
