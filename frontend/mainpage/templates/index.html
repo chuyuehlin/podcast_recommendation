@@ -61,17 +61,14 @@
         container: "#hits",
         templates: {
           empty: 'No results for <q>{{ query }}</q>',
-          showMoreText: `
-          <div>
-            <h4>show more results</h4>
-          </div>`,
           item(hit){
             return`
               <div class="flipcard">
                 <div class="flipcard-inner">
                   <div class="flipcard-front">
                     <div class="image">
-                      <img src="${hit.poster}"/>
+                      <img id="${hit.episode_uri}" src="${hit.poster}"/>
+                      <img class="play_button" onclick="document.getElementById(${hit.episode_uri}).play" />
                     </div>
                     <div class="info">
                       <p class="hit-episode">
