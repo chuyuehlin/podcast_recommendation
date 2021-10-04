@@ -21,8 +21,8 @@
         <div class="left">
           <div id="searchbox"></div>
           <div class="sidebar">
-            <a href="#" >Home</a>
-            <a href="#" >Goback</a>
+            <a href="./index_copy_V3.html" >Home</a>
+            <a href="http://localhost:5000/episode/2XL2UdYBBhTy6AvkItjVRO" >Goback</a>
           </div>
         </div>
         <div class="hits" id="hits">
@@ -83,10 +83,11 @@
           </div>`,
           item(hit){
             return`
-              <div class="row">
-                <div class="front">
+              <div class="row" >
+                <a href="http://localhost:5000/episode/${hit.episode_uri}">
+                <div class="front" >
                     <div class="img">
-                      <img src="${hit.poster}"/>
+                      <img src="${hit.poster}" />
                     </div>
                     <div class="info">
                       <p class="hit-publisher">
@@ -99,7 +100,8 @@
                     <div class="description">
                       ${hit.episode_description}
                     </div> 
-                </div>            
+                </div>   
+                </a>         
               </div>`;
           }
         }
