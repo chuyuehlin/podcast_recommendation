@@ -8,9 +8,6 @@ import json
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-import spotipy.util as util
 from bing_image_downloader.downloader import download, get_all_link
 from googlesearch import search
 import yake
