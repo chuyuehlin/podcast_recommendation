@@ -16,6 +16,8 @@
     <!-- Jquery CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- player CSS/JS -->
+    <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
+    <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
     <link href="/static/demo3player.css?v=25" rel="stylesheet">
       
   </head>
@@ -30,12 +32,13 @@
             <img alt="Bootstrap Image Preview" src="{{ message["poster"] }}" style="width: 200px;margin: 0;" id="poster">
               
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8"  >
             <div class="jumbotron" style="box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #a3b1c6a8;">
-              <h2 class="post-title" style="color: #65717e;">
+            <!-- <div class="jumbotron" style="box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #f1f1f1;"></div> -->
+              <h2 class="post-title" style="color:#f1f1f1 ;">
                {{ message["episode_name"] }}
               </h2>
-              <p class="post-title" style="word-wrap: break-word;overflow: hidden;height: 150px;color: #65717e;">
+              <p class="post-title" style="word-wrap: break-word;overflow: hidden;height: 150px;color: #f1f1f1;">
                 {{ message["episode_description"] }}
 <!--                 asdasdasdasdasdasdasdasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->
               </p>
@@ -75,8 +78,8 @@
       </div>
 
       <div class="row">
-        <div class="col-md-6"><div class="currentTime"></div></div>
-        <div class="col-md-6"><div class="durationTime"></div></div>
+        <div class="col-md-6" style="color: #f1f1f1;"><div class="currentTime"></div></div>
+        <div class="col-md-6" style="color: #f1f1f1;"><div class="durationTime"></div></div>
       </div>
                           
                       
@@ -158,6 +161,7 @@
 /*    .ais-SearchBox { margin: 1em 0; }*/
   </style>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="/static/demo3player.js?v=40"></script>
+ 
+  <script src="/static/demo3player.js"></script>
 
 </html>
