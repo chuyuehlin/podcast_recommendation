@@ -28,29 +28,14 @@ root.addHandler(ch)
 
 app = Flask(__name__)
 model = KeyBERT(model='paraphrase-MiniLM-L6-v2')
-episodes_cache={"2XL2UdYBBhTy6AvkItjVRO":{'show_uri': '38XNk5T3KoIbNKxQMKaMY0', 'show_name': 'Sport talks', 'show_description': 'Talks with various guests and experts about sports and life', 'publisher': 'Alex', 'language': "['en']", 'rss_link': 'https://anchor.fm/s/f98a0e4/podcast/rss', 'episode_uri': '2XL2UdYBBhTy6AvkItjVRO', 'episode_name': 'Sport Talks S01E02', 'episode_audio': 'https://anchor.fm/s/f98a0e4/podcast/play/7557830/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2020-02-26%2Ff134ec2379b6d653b76c15dd9a1e82ff.m4a', 'episode_description': 'Sport talks s01e02 ', 'poster': 'https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2516609/2516609-1571602331890-3ab1c71d8a03b.jpg', 'duration': '10.858816666666666', 'transcript': {'0': "Hey guys, welcome to my podcast today. My guest is Thomas. Thomas is reduces of I'm Thomas glad to be here. Okay. So in this podcast for gonna both be answering a couple questions just some random questions. So the first question is, what are your top three basketball players of all time you could question. Where do you say all time or just current? Yeah, well time that goes even deeper. I would have to say Michael Jordan because he's the go he's like six four nine six six wins three losses in the finals LeBron James and then Kareem Abdul-Jabbar. Hello. So sorry my mic kinda ditched shall I say so yeah. Yeah. I respect those choices. I top three would be Michael Jordan. Mmm. Second would probably be shocked. You know, Shaq. Okay insane. I got you in player. And then ", '120': "just have to go with you know King James of course. Yeah King James very very good player. Yeah guys. So yeah guys, so yeah guys. Yeah. Yeah, so next question guys. your three most favorite foods All right, so I would have to say pizza. Number one. It offers a very variety variety of choices. Ha ha that's funny. Okay. Yeah, you know pepperoni pizzas out there and it gives you may doze it gives you cheese that's vegetables Dairy protein. Ins carbohydrates? It's got it all second. I would have to go for a good old hamburger hamburger is just tastes good not much explanation for that. And then third I'm will have to say. Imma have to say vanilla ice cream So basically America's favorites so very good food. So my top three would probably be in no specific order. I'd have to say sushi. smoothies, you know nice smoothie from McDonald's pretty nice and Yeah, ", '240': "cream vanilla ice creams free nice. So yeah, I just go with that very hard choice. So I next question top three YouTubers. Wow, very good question, you know one year ago, maybe two years ago. The top of the list would be T 1 Alpha Lowell Tyler one, but he's kind of boring now. I'm sure you still doing fine through. Yeah. I just can't watch League of Legends all day Taiwan. So at the top of the list I would have to go. Huh, you know, I'm binging the seidman right now. I guess I could put them up there and then Number two. Yeah, I mean, I've been really popping off lately. So yeah sure as of October 21st, they got a video on trending very very good another actually honestly nearly tied for first. I would have to say Bros first. There are two dudes that are like bodybuilders provide very Funny content and third I would have to dedicate that slot to my boy. I be salty. He's an underrated YouTube really plays Minecraft. I be salty. He's insane. Yeah, how about you so I have to go with number one. Where's I'd residing in P. He's insane. Number two, ", '360': "not really a YouTuber but xq cow, he's he has some pretty funny content. I carried number 3 probably. Advisor advisors go and yeah. Alright, very good. So next question. top three classes at school Very good question. I would have to say in terms of in terms of academic. Like academic grades and stuff or just like how much fun you have? You can choose either one. All right, in terms of grades. I would have to go Social Justice Academy history and then Social Justice Academy English and then I would have to say AP Psychology very easy classes if you guys want to take them in terms of One would have to go. history shoe physical education, you know, that's up there and no shoot calculus Okay. Yeah, calculus super fun. I love it so much. So my top three for grade probably Social Justice Academy history. ", '480': "probably. AP human geography and cvps and number three all God Probably biomed pretty free. Yeah. I got you there most fun. Calculus. I mean, it's so much fun. I like you so much. I love doing through do so much. It's just awesome. I could honestly just do derivatives all day. Yep. Number two, probably. I'd have to say I mean, you just can't talk calculus pretty hard. I think of another one. I'd have to go with a 3pc blow another very fun class enjoyed that class and much probably. Study hall. Yeah pretty hard. But I mean respectable choices. Yep. Okay. Next question is if you could have a superpower, what would it be? I would have to go with the semi mainstream. I would want to be able to read somebody's mind or if the if the if it is a superpower, I'd like to always be right because in on these Cal quizzes and tests, I just know the right answer grades are all you need to succeed in life. Everybody knows that boom go to do. Duke boom go to Harvard boom get a scholarship to Harvard boom make trillions of dollars. "}}}
+episodes_cache=dict()
 
-database_url="http://54.168.198.194:9200/"
-#Route to stream music
-# @app.route('/<string:stream_id>')
-# def streammp3(stream_id):
-#     res = sp.episode(stream_id,market='US')
-#     print(res['audio_preview_url'])
-#     print(res['description'])
-#     print(res['images'][1]['url'])
-                
-#     return render_template('player.html', image=res['images'][1]['url'], path=res['audio_preview_url'], name=res['name'], artist=res['show']['publisher'], des=res['description'], episode_id=stream_id)
+database_url="http://127.0.0.1:9200/"
 
-#Route to stream music
-@app.route('/search/<string:query>')
-def search(query):
-	outcome = requests.get(database_url+'episodes/_search?q='+query)
-	outcome = outcome.json()
-	outcome = outcome["hits"]["hits"]
-	if len(outcome)>10:
-		outcome = outcome[:10]
+@app.route('/')
+def home():
+	return render_template('index_copy_V3.html')
 
-	return outcome
 
 @app.route('/episode/<string:episodeID>')
 def episode(episodeID):
@@ -186,3 +171,4 @@ if __name__ == "__main__":
 	logging.debug("Started Server, Kindly visit http://localhost:" + str(port))
 	http_server.listen(port)
 	IOLoop.instance().start()
+	app.run(debug=True)

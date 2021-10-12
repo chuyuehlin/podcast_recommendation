@@ -78,7 +78,7 @@ class Bing:
             # if self.verbose:
             #     print('\n\n[!!]Indexing page: {}\n'.format(self.page_counter + 1))
             # Parse the page source and download pics
-            request_url = 'https://www.bing.com/images/async?q=' + urllib.parse.quote_plus(self.query) \
+            request_url = 'http://www.bing.com/images/async?q=' + urllib.parse.quote_plus(self.query) \
                           + '&first=' + str(self.page_counter) + '&count=' + str(self.limit) \
                           + '&adlt=' + self.adult #+ '&qft=+filterui:photo-clipart'#+ '&qft=' + ('' if self.filters is None else str(self.filters))
             print(request_url)

@@ -44,8 +44,8 @@ html, body {
     bottom: 10%;
     right: 35%;
     border-radius: 1.5rem;
-    -webkit-filter: drop-shadow(0px 0px 12px #c9c9c9);
-    filter: drop-shadow(0px 0px 12px #c9c9c9);
+    /* -webkit-filter: drop-shadow(0px 0px 12px #c9c9c9);
+    filter: drop-shadow(0px 0px 12px #c9c9c9); */
     
     width: 60%;
     float:left;
@@ -128,7 +128,7 @@ img {
   margin-left: 40%;
 }
 .neu {
-  box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #a3b1c6a8;
+  /* box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #a3b1c6a8; */
   background: #e0e5ec;
   border-radius: 2em;
   border: 0;
