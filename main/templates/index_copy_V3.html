@@ -81,35 +81,13 @@
             return`
             <div class="row">
               <a href="http://localhost:5000/episode/${hit.id}">
-                <audio class="audio" id="${hit.episode_uri}">
-                  <source src="${hit.episode_audio}" type="audio/x-m4a" />
-                </audio>   
-                <div class="back">
+
+                <div class="front">
                   <div class="img">
                     <img class="poster" src="${hit.poster}"/>
-                    <img class="stopButton" src="./stop.webp" 
-                      id = "${hit.episode_uri}_stopButton"
-                    />
-                    <img class="playButton" src="./play.png" 
-                      id="${hit.episode_uri}_playButton"
-                      onclick="audio = document.getElementById('${hit.episode_uri}');
-                        playBtn = document.getElementById('${hit.episode_uri}_playButton');
-                        stopBtn = document.getElementById('${hit.episode_uri}_stopButton');
-                        if (playBtn.style.opacity != 0) {
-                          audio.volume = 0.3;
-                          audio.play();
-                          playBtn.style.opacity = 0;
-                          stopBtn.style.opacity = 0.3;
-                        } else {
-                          audio.pause();
-                          playBtn.style.opacity = 0.3;
-                          stopBtn.style.opacity = 0;
-                        };
-                      "
-                    />
                   </div>
                   <div class="info">
-                    <p class="hit-show">
+                    <p class="hit-publisher">
                       ${instantsearch.highlight({ attribute: 'show_name', highlightedTagName: 'mark', hit })}
                     </p>
                     <p class="hit-episode">
