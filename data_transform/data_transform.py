@@ -3,35 +3,66 @@ import csv
 import glob
 import json
 from tqdm import tqdm
-All = {}
-for filename in tqdm(glob.iglob(r'/Users/chuyueh/課程/專題/spotify-podcasts-2020/*/*/*/*/*.json', recursive=True)):
+
+##########################
+# 將metadata跟逐字稿整合 #
+##########################
+all_transcript = {} #以每集的episodeID作為key值、內容為整集逐字稿 的dictionary
+all_keywords = {} #以每集的episodeID作為key值、內容為各段keywords 的dictionary
+for filename in tqdm(glob.iglob(r'/path/to/spotify-podcasts-2020/*/*/*/*/*.json', recursive=True)):
 	f = open(filename)
-	Id = filename[-27:-5]
 	f = json.load(f)
-	out = {}
+	
+	#逐字稿的檔名就是episodeID
+	Id = filename[-27:-5]
+	
+	#先設0，如果偵測到某字的時間超過此段上限，會先暫存此段文字再把starttime+60重新一個段落
 	starttime=0
-	tmp=''
+	
+	keywords = {}
+	tmp='' #每段逐字稿
+	transcript='' #整集逐字稿
 	for word in f['results'][-1]['alternatives'][0]['words']:
-		if float(word['startTime'][:-1]) < starttime+120:
+		
+		#收集每60秒內的文字稿
+		if float(word['startTime'][:-1]) < starttime+60:
 			tmp=tmp+word['word']+' '
+		
+		#從每段逐字稿(tmp)中抓關鍵字，並把每段逐字稿(tmp)併入整集逐字稿中
 		else:
-			out[str(starttime)]=tmp
-			tmp=''
-			starttime+=120
-	All[Id] = out
+			
+			#把每段逐字稿併入整集逐字稿中
+			transcript=transcript+tmp+' '
+			
+			#從每段的文字中抓關鍵字
+			#keywords[starttime] = extract(tmp)
+			#待晉毅補充
+
+			#reset tmp + set starttime to another segment
+			tmp=word['word']+' '
+			starttime+=60
+	
+	#把此集的分段關鍵字、整個逐字稿以episodeID為key值暫存起來
+	all_keywords[Id] = keywords
+	all_transcript[Id] = transcript
 
 print('done')
 
 
+##########################
+# 格式調整後輸入es       #
+##########################
+
 # Create the elasticsearch client.
 es = Elasticsearch(host = "127.0.0.1", port = 9200, timeout=60)
+
+#因為要用bulk方式insert進去，因此會先把每集資料先放進list
 insert = []
 
-
-with open('all.json') as f:
+with open('/path/to/only7.json') as f:
 	f = json.load(f)
 	for row in f:
-		if row['episode_uri'] in All:
+		if row['episode_uri'] in all_transcript:
 			tmp={
 				"_index": "episodes",
 				"_op_type": "index",
@@ -48,41 +79,13 @@ with open('all.json') as f:
 					"episode_description":row["episode_description"],	
 					"poster":row["poster"],
 					"duration":row["duration"],	
-					"transcript":All[row['episode_uri']]
+					"transcript":all_transcript[row['episode_uri']],
+					"keywords":all_keywords[row['episode_uri']]
 				}
 			}	
 			insert.append(tmp)
 	print(len(insert))
-	helpers.bulk(es, insert)
-
-
-'''
-
-# Open csv file and bulk upload
-with open('metadata.tsv') as f:
-	reader = csv.reader(f, delimiter='\t')
 	
-	for row in tqdm(reader):
-		if row[6][16:] in All:
-			insert.append({
-				"_index": "episodes",
-				"_op_type": "index",
-				"_id": row[6][16:],
-				"_source": {
-					"show_uri":row[0],
-					"show_name":row[1],
-					"show_description":row[2],
-					"publisher":row[3],
-					"language":row[4],
-					"rss_link":row[5],	
-					"episode_uri":row[6],	
-					"episode_name":row[7],	
-					"episode_description":row[8],	
-					"duration":row[9],	
-					"show_filename_prefix":row[10],	
-					"episode_filename_prefix":row[11],
-					"transcript":All[row[6][16:]]
-				}
-			})
+	#insert進去es
 	helpers.bulk(es, insert)
-'''
+
