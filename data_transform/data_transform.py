@@ -41,7 +41,8 @@ for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursi
 	
 	keywords = {}
 	tmp='' #每段逐字稿
-	transcript='' #整集逐字稿
+	whole_trans='' #整集逐字稿
+	transcript={} #整集跟每段的逐字稿
 	for word in f['results'][-1]['alternatives'][0]['words']:
 		
 		#收集每60秒內的文字稿
@@ -52,7 +53,10 @@ for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursi
 		else:
 			
 			#把每段逐字稿併入整集逐字稿中
-			transcript=transcript+tmp+' '
+			whole_trans=whole_trans+tmp+' '
+
+			#每段逐字稿放進dict裡
+			transcript[starttime] = tmp
 			
 			#從每段的文字中抓關鍵字
 			doc = nlp(tmp)
@@ -73,11 +77,14 @@ for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursi
 			tmp=word['word']+' '
 			starttime+=60
 	
-	#把此集的分段關鍵字、整個逐字稿以episodeID為key值暫存起來
+	#整集逐字稿放進dict裡，transcript["all"]是整集逐字稿，transcript[<某個秒數>]為分段逐字稿
+	transcript["all"] = whole_trans
+	
+	#把此集的分段關鍵字、逐字稿以episodeID為key值暫存起來
 	all_keywords[Id] = keywords
 	all_transcript[Id] = transcript
-print('done')
 
+print('done')
 
 ##########################
 # 格式調整後輸入es       #
