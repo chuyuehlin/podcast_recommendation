@@ -29,7 +29,7 @@ model = KeyBERT(model='paraphrase-MiniLM-L6-v2') #load keybert pretrained model
 ##########################
 all_transcript = {} #以每集的episodeID作為key值、內容為整集逐字稿 的dictionary
 all_keywords = {} #以每集的episodeID作為key值、內容為各段keywords 的dictionary
-for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursive=True)):
+for filename in tqdm(glob.iglob(r'/path/to/spotify-podcasts-2020/*/7/*/*/*.json', recursive=True)):
 	f = open(filename)
 	f = json.load(f)
 	
@@ -57,12 +57,12 @@ for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursi
 
 			#每段逐字稿放進dict裡
 			transcript[starttime] = tmp
-			
+					
 			#從每段的文字中抓關鍵字
 			doc = nlp(tmp)
 			matches = matcher(doc) 
 			extracted_keywords=[]  #此段文字稿抓到的所有關鍵字(keyBERT extraction + spaCy NER)
-
+	
 			result=[]
 			for match_id, start, end in matches:
 			    span = doc[start:end]
@@ -72,7 +72,8 @@ for filename in tqdm(glob.iglob(r'spotify-podcasts-2020/*/7/*/*/*.json', recursi
 			extracted_keywords = extracted_keywords + list(set([(ee.text.lower(),0) for ee in doc.ents if ee.label_ == 'PERSON' or ee.label_ == 'ORG' or ee.label_ == 'GPE'])) #用spacy NER抓命名實體 
 
 			keywords[starttime] = extracted_keywords
-
+			
+			
 			#reset tmp + set starttime to another segment
 			tmp=word['word']+' '
 			starttime+=60
@@ -96,32 +97,41 @@ es = Elasticsearch(host = "127.0.0.1", port = 9200, timeout=60)
 #因為要用bulk方式insert進去，因此會先把每集資料先放進list
 insert = []
 
-with open('/path/to/only7.json') as f:
-	f = json.load(f)
-	for row in f:
-		if row['episode_uri'] in all_transcript:
-			tmp={
-				"_index": "episodes",
-				"_op_type": "index",
-				"_id": row['episode_uri'],
-				"_source": {
-					"show_uri":row["show_uri"],
-					"show_name":row["show_name"],
-					"show_description":row["show_description"],
-					"publisher":row["publisher"],
-					"language":row["language"],
-					"episode_uri":row["episode_uri"],	
-					"episode_name":row["episode_name"],
-					"episode_audio":row['episode_audio'],
-					"episode_description":row["episode_description"],	
-					"poster":row["poster"],
-					"duration":row["duration"],	
-					"transcript":all_transcript[row['episode_uri']],
-					"keywords":all_keywords[row['episode_uri']]
-				}
-			}	
-			insert.append(tmp)
-	print(len(insert))
-	
-	#insert進去es
-	helpers.bulk(es, insert)
+#summarization 的 json file
+with open('/path/to/abs_7.json') as abs_f:
+	abs_f = json.load(abs_f)
+
+	#metadata 的 json file
+	with open('/path/to/only7.json') as f:
+		f = json.load(f)
+
+		for row in f:
+			
+			#確認這筆episode有相對應的逐字稿
+			if row['episode_uri'] in all_transcript and row['episode_uri'] in abs_f:
+				tmp={
+					"_index": "episodes",
+					"_op_type": "index",
+					"_id": row['episode_uri'],
+					"_source": {
+						"show_uri":row["show_uri"],
+						"show_name":row["show_name"],
+						"show_description":row["show_description"],
+						"publisher":row["publisher"],
+						"language":row["language"],
+						"episode_uri":row["episode_uri"],	
+						"episode_name":row["episode_name"],
+						"episode_audio":row['episode_audio'],
+						"episode_description":row["episode_description"],
+						"poster":row["poster"],
+						"duration":row["duration"],	
+						"transcript":all_transcript[row['episode_uri']],
+						"keywords":all_keywords[row['episode_uri']],
+						"summarization":abs_f[row['episode_uri']]
+					}
+				}	
+				insert.append(tmp)
+		print(len(insert))
+		
+		#insert進去es
+		helpers.bulk(es, insert)
