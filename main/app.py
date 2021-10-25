@@ -1,5 +1,6 @@
 from flask import Flask,render_template, Response, redirect, request
 import requests
+from bs4 import BeautifulSoup
 import sys
 import urllib
 import base64
@@ -81,8 +82,19 @@ def recommend(ID,time):
 		r = r.json()
 		if r['status']=="ok" and len(r['news'])>0:
 			websites.append(r['news'][0]['url'])
-		
-		return {"result":websites}
+	
+	result = []
+	for w in websites:
+		u = urlparse(w)
+		domain_name = u.netloc
+
+		reqs = requests.get(w)
+		soup = BeautifulSoup(reqs.text, 'html.parser')
+		title = soup.find_all('title')[0].get_text()
+
+		result.append({"url":w,"domain_name":domain_name,"title":title})
+
+	return {"result":result}
 
 @app.route('/recommend_image/<string:ID>/<string:time>/')
 def recommend_image(ID,time):
