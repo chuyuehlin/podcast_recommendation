@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- InstantSearch CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/templates/basic_search.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch@0.3.2/dist/instant-meilisearch.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4"></script>
+    <!-- Jquery CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Bootstrap CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
+
+    <!-- Font-Awesome CDN -->
+    <script src="https://kit.fontawesome.com/5327a5f721.js" crossorigin="anonymous"></script>
+
+    <!-- player CSS/JS -->
+    <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
+    <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
+    <link href="/static/demo3player.css?v=91" rel="stylesheet">
+
+
+  </head>
+  <body>
+  <audio src= {{ message["episode_audio"] }} id="song"></audio>
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8 leftframe">
+      <div class="col-md-12 panel"> 
+        <div class="row" style="height:61%">
+          <div class="col-md-4">
+            <img alt="Bootstrap Image Preview" src="{{ message["poster"] }}" style="width: 200px;margin: 0;" id="poster">
+              
+          </div>
+          <div class="col-md-8"  >
+            <div class="jumbotron">
+            <!-- <div class="jumbotron" style="box-shadow: -5px -5px 15px 0px #ffffff9e, 5px 5px 15px 0px #f1f1f1;"></div> -->
+              <h2 class="post-title" style="color:#f1f1f1 ;">
+               {{ message["episode_name"] }}
+              </h2>
+              <a onclick="showIframe()">Picture Widget</a>
+              <p class="post-title" style="word-wrap: break-word;overflow: hidden;height: 150px;color: #f1f1f1;">
+                {{ message["episode_description"] }}
+<!--                 asdasdasdasdasdasdasdasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->
+              </p>
+
+            </div>
+          </div>
+        </div>
+        <div class="row" style="height:15%;margin:2px" id="kw-vue">
+<!-- <button @click="removeTags">Add input</button> -->
+          <div class="col-md-12">
+            <transition-group name="list-complete" tag="p">
+            <button  style="margin:5px" v-for="input in inputs"  v-bind:key="input[0]" type="button" class="btn btn-success btn-xs kw-tag list-complete-item" data-toggle="tooltip"  :title="input[1]" >
+              <a target="_blank" rel="noopener noreferrer" :href="input[2]" style="color:white">%%% input[0] %%%</a>
+            </button>
+          </transition-group>
+<!--             <button type="button" class="btn btn-success btn-xs kw-tag" data-toggle="tooltip" data-placement="top" title="<p>Description</p><br><p>TestTestTestTest</p>">
+              Michael Jordan
+            </button>
+            <button type="button" class="btn btn-success btn-xs kw-tag" data-toggle="tooltip" data-placement="right" title="Tooltip on right">
+              Shaq
+            </button>
+            <button type="button" class="btn btn-primary btn-xs kw-tag" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">
+              Kareem swsqxkoxwe
+            </button>
+            <button type="button" class="btn btn-primary btn-xs kw-tag" data-toggle="tooltip" data-placement="left" title="Tooltip on left">
+              Microsoft
+            </button> -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+             <button class="pbtn lg neu buttons"><i class="fas fa-fast-backward"></i></button>
+              
+          </div>
+          <div class="col-md-4">
+             
+            <button class="pbtn lg neu buttons" onclick="playPause()"><i class="fas fa-play" id="play-pause"></i></button>
+
+          </div>
+          <div class="col-md-4">
+            <button class="pbtn lg neu buttons"><i class="fas fa-fast-forward"></i></button>
+
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-md-12">
+              <div class="track neu" id="outside">
+
+        <div id="inside">
+          
+        </div>
+
+      </div>
+
+      <div class="row" style="margin:2px">
+        <div class="col-md-6" style="color: #f1f1f1;"><div class="currentTime"></div></div>
+        <div class="col-md-6" style="color: #f1f1f1;"><div class="durationTime"></div></div>
+      </div>
+                          
+                      
+          </div>
+        </div>
+      </div>
+      <button class="btn"><i class="fa fa-search"></i></button>
+    </div>
+    <div class="col-md-2">
+      <div class="container">
+        <div class="marquee1 left-marquee">
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image1" data-bgcolor="#317a5c">
+
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image2" data-bgcolor="#dedede">
+          
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image3" data-bgcolor="#ff0000">
+    
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image4" data-bgcolor="#000000">
+
+          
+        </div>
+        <div class="marquee2 left-marquee">
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image5" data-bgcolor="#317a5c">
+
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image6" data-bgcolor="#dedede">
+
+          
+          <img src="hhttps://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image7" data-bgcolor="#ff0000">
+
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image8" data-bgcolor="#000000">
+
+        </div>
+        </div>
+
+    </div>
+    <div class="col-md-2">
+        <div class="container">
+        <div class="marquee1 right-marquee">
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image9" data-bgcolor="#317a5c">
+          <!-- <p>This is some text about image 1.</p>  -->
+          <!-- 放文章 -->
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image10" data-bgcolor="#dedede">
+
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image11" data-bgcolor="#ff0000">
+          <!-- <p>This is some text about image 3</p> -->
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image12" data-bgcolor="#000000">
+
+          
+        </div>
+        <div class="marquee2  right-marquee">
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image13" data-bgcolor="#317a5c">
+          <!-- <p>This is some text about image 1.</p> -->
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image14" data-bgcolor="#dedede">
+
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image15" data-bgcolor="#ff0000">
+          <!-- <p>This is some text about image 3</p> -->
+          
+          <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image16" data-bgcolor="#000000">
+
+          
+        </div>
+        </div>
+    </div>
+  </div>
+</div>
+  </body>
+  <style>
+    /*body { font-family: sans-serif; padding: 1em; }*/
+/*    .ais-SearchBox { margin: 1em 0; }*/
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="/static/demo3player.js?v=85"></script>
+
+</html>
