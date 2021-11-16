@@ -22,51 +22,52 @@ let pPause = document.querySelector('#play-pause'); // element where play and pa
 let playing = true;
 let reco_event;
 let reco_summ;
+var service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 
 function playPause() {
-    if (playing) {
-        updateImage()
-        updateSummary()
-        reco_event = setInterval(updateImage, 15000);
-        reco_summ = setInterval(updateSummary, 5000);
-        // const song = document.querySelector('#song')
-        // thumbnail = document.querySelector('#thumbnail');
-        $("#play-pause").removeClass('fa-play').addClass('fa-pause');
-        // thumbnail.style.transform = "scale(1.15)";
-        
-        song.play();
-        playing = false;
-    } else {
-        clearInterval(reco_event)
-        clearInterval(reco_summ)
-        $("#play-pause").removeClass('fa-pause').addClass('fa-play');
-        // thumbnail.style.transform = "scale(1)"
-        
-        song.pause();
-        playing = true;
-    }
+  if (playing) {
+    updateImage()
+    updateSummary()
+    reco_event = setInterval(updateImage, 15000);
+    reco_summ = setInterval(updateSummary, 5000);
+    // const song = document.querySelector('#song')
+    // thumbnail = document.querySelector('#thumbnail');
+    $("#play-pause").removeClass('fa-play').addClass('fa-pause');
+    // thumbnail.style.transform = "scale(1.15)";
+
+    song.play();
+    playing = false;
+  } else {
+    clearInterval(reco_event)
+    clearInterval(reco_summ)
+    $("#play-pause").removeClass('fa-pause').addClass('fa-play');
+    // thumbnail.style.transform = "scale(1)"
+
+    song.pause();
+    playing = true;
+  }
 }
 function updateProgressValue() {
-    progressBar.max = song.duration;
-    progressBar.value = song.currentTime;
-    $('#inside').css("width", String(Math.floor((progressBar.value/progressBar.max)*100)) + "%");
-    // inside.style.width = String(Math.floor((progressBar.value/progressBar.max)*100)) + "%";
+  progressBar.max = song.duration;
+  progressBar.value = song.currentTime;
+  $('#inside').css("width", String(Math.floor((progressBar.value / progressBar.max) * 100)) + "%");
+  // inside.style.width = String(Math.floor((progressBar.value/progressBar.max)*100)) + "%";
 
-    document.querySelector('.currentTime').innerHTML = (formatTime(Math.floor(song.currentTime)));
-    if (document.querySelector('.durationTime').innerHTML === "NaN:NaN") {
-        document.querySelector('.durationTime').innerHTML = "0:00";
-    } else {
-        document.querySelector('.durationTime').innerHTML = (formatTime(Math.floor(song.duration)));
-    }
+  document.querySelector('.currentTime').innerHTML = (formatTime(Math.floor(song.currentTime)));
+  if (document.querySelector('.durationTime').innerHTML === "NaN:NaN") {
+    document.querySelector('.durationTime').innerHTML = "0:00";
+  } else {
+    document.querySelector('.durationTime').innerHTML = (formatTime(Math.floor(song.duration)));
+  }
 };
 
 function formatTime(seconds) {
-    let min = Math.floor((seconds / 60));
-    let sec = Math.floor(seconds - (min * 60));
-    if (sec < 10){ 
-        sec  = `0${sec}`;
-    };
-    return `${min}:${sec}`;
+  let min = Math.floor((seconds / 60));
+  let sec = Math.floor(seconds - (min * 60));
+  if (sec < 10) {
+    sec = `0${sec}`;
+  };
+  return `${min}:${sec}`;
 };
 
 function updateSummary() {
@@ -76,122 +77,330 @@ function updateSummary() {
 
   //   $("#summary").text(res.data.result);
 
-// });
+  // });
 };
 
-$(document).ready(function() {
-	$('.marquee1').css('visibility', 'hidden');
-  
-  // place this within dom ready function
-  function showmarquee1() {     
-  	$('.marquee1').css('visibility', 'visible');
+$(document).ready(function () {
+  $('.marquee1').css('visibility', 'hidden');
 
- }
- progressBar.value = 0
- // use setTimeout() to execute
- setTimeout(showmarquee1, 13000)
- setInterval(updateProgressValue, 500);
- updateImage()
- // if($("#poster").attr("src")===null){
- //  setTimeout(showmarquee1, 13000)
- // }
+  // place this within dom ready function
+  function showmarquee1() {
+    $('.marquee1').css('visibility', 'visible');
+
+  }
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip({
+      animated: 'fade',
+      placement: 'top',
+      html: true
+    })
+  })
+  progressBar.value = 0
+  // use setTimeout() to execute
+  setTimeout(showmarquee1, 19000)
+  setInterval(updateProgressValue, 500);
+  updateImage()
+  // if($("#poster").attr("src")===null){
+  //  setTimeout(showmarquee1, 13000)
+  // }
 });
 
-    outside.addEventListener('click', function(e) {
+outside.addEventListener('click', function (e) {
 
-      var pct = e.offsetX / outside.offsetWidth;
-      progressBar.value=pct*song.duration
-      song.currentTime = progressBar.value;
-      $('#inside').css('width', e.offsetX + "px");
-      // inside.style.width = e.offsetX + "px";
-      changeProgressBar()
-      // calculate the %
-      
-      // inside.innerHTML = pct + " %";
-    }, false);
+  var pct = e.offsetX / outside.offsetWidth;
+  progressBar.value = pct * song.duration
+  song.currentTime = progressBar.value;
+  $('#inside').css('width', e.offsetX + "px");
+  // inside.style.width = e.offsetX + "px";
+  changeProgressBar()
+  // calculate the %
+
+  // inside.innerHTML = pct + " %";
+}, false);
 function updateImage() {
 
-    axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+progressBar.value+'/')
-  .then((res) => {
-    console.log(res);
-    image_links=res;
-    $("#image1").attr("src",res.data.result[0][1][0])
-    $("#image2").attr("src",res.data.result[0][1][1])
-    $("#image3").attr("src",res.data.result[0][1][2])
-    $("#image4").attr("src",res.data.result[0][1][3])
-    $("#image5").attr("src",res.data.result[1][1][0])
-    $("#image6").attr("src",res.data.result[1][1][1])
-    $("#image7").attr("src",res.data.result[1][1][2])
-    $("#image8").attr("src",res.data.result[1][1][3])
-    $("#image9").attr("src",res.data.result[2][1][0])
-    $("#image10").attr("src",res.data.result[2][1][1])
-    $("#image11").attr("src",res.data.result[2][1][2])
-    $("#image12").attr("src",res.data.result[2][1][3])
-    $("#image13").attr("src",res.data.result[3][1][0])
-    $("#image14").attr("src",res.data.result[3][1][1])
-    $("#image15").attr("src",res.data.result[3][1][2])
-    $("#image16").attr("src",res.data.result[3][1][3])
-    
-});
+  axios.get('http://localhost:5000/recommend_image/' + window.location.pathname.split("/")[2] + '/' + progressBar.value + '/')
+    .then((res) => {
+      console.log(res);
+      image_links = res;
+      tags_generator.inputs = []
+      tags_generator.exist_key = []
+      $.each(res.data.result, function (t, item) {
+
+        var params = {
+          'query': item[0],
+          'limit': 1,
+          'indent': true,
+          'key': 'AIzaSyB5UtPW_MpxtKb6HwF9cxDxEUflDqX4Wyk',
+        };
+        $.getJSON(service_url + '?callback=?', params, function (response) {
+          if (0 || response.itemListElement.length == 0 || ((parseInt(response.itemListElement[0]['resultScore'], 10) < 10000) && (response.itemListElement[0]['result']['name'].toLowerCase() != item[0].toLowerCase()))) {
+            tags_generator.addInput([item[0], "", undefined]);
+          } else {
+            $.each(response.itemListElement, function (i, element) {
+              var name = element['result']['name']
+              var des = ""
+              var url = ""
+              if (typeof element['result']['description'] === 'undefined') {
+                des = element['result']['detailedDescription']['articleBody']
+              }
+              else {
+                des = element['result']['description']
+              }
+              url = element['result']['url']
+              tags_generator.addInput([name, des, url]);
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip({
+                  animated: 'fade',
+                  placement: 'top',
+                  html: true
+                })
+              })
+            });
+          }
+        });
+      });
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+          animated: 'fade',
+          placement: 'top',
+          html: true
+        })
+      })
+      $("#image1").attr("src", res.data.result[0][1][0])
+      $("#image2").attr("src", res.data.result[0][1][1])
+      $("#image3").attr("src", res.data.result[0][1][2])
+      $("#image4").attr("src", res.data.result[0][1][3])
+      $("#image5").attr("src", res.data.result[1][1][0])
+      $("#image6").attr("src", res.data.result[1][1][1])
+      $("#image7").attr("src", res.data.result[1][1][2])
+      $("#image8").attr("src", res.data.result[1][1][3])
+      $("#image9").attr("src", res.data.result[2][1][0])
+      $("#image10").attr("src", res.data.result[2][1][1])
+      $("#image11").attr("src", res.data.result[2][1][2])
+      $("#image12").attr("src", res.data.result[2][1][3])
+      $("#image13").attr("src", res.data.result[3][1][0])
+      $("#image14").attr("src", res.data.result[3][1][1])
+      $("#image15").attr("src", res.data.result[3][1][2])
+      $("#image16").attr("src", res.data.result[3][1][3])
+
+    });
 };
 
 
 function changeProgressBar() {
-    
-    axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
-  .then((res) => {
-    console.log(res);
-    $("#image1").attr("src",res.data.result[0][1][0])
-    $("#image2").attr("src",res.data.result[0][1][1])
-    $("#image3").attr("src",res.data.result[0][1][2])
-    $("#image4").attr("src",res.data.result[0][1][3])
-    $("#image5").attr("src",res.data.result[1][1][0])
-    $("#image6").attr("src",res.data.result[1][1][1])
-    $("#image7").attr("src",res.data.result[1][1][2])
-    $("#image8").attr("src",res.data.result[1][1][3])
-    $("#image9").attr("src",res.data.result[2][1][0])
-    $("#image10").attr("src",res.data.result[2][1][1])
-    $("#image11").attr("src",res.data.result[2][1][2])
-    $("#image12").attr("src",res.data.result[2][1][3])
-    $("#image13").attr("src",res.data.result[3][1][0])
-    $("#image14").attr("src",res.data.result[3][1][1])
-    $("#image15").attr("src",res.data.result[3][1][2])
-    $("#image16").attr("src",res.data.result[3][1][3])
 
-});
-//       axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
-//   .then((res) => {
-//     console.log(res);
+  axios.get('http://localhost:5000/recommend_image/' + window.location.pathname.split("/")[2] + '/' + song.currentTime + '/')
+    .then((res) => {
+      console.log(res);
+      image_links = res;
+      tags_generator.inputs = []
+      tags_generator.exist_key = []
+      $.each(res.data.result, function (t, item) {
 
-//     $("#summary").text(res.data.result);
+        var params = {
+          'query': item[0],
+          'limit': 1,
+          'indent': true,
+          'key': 'AIzaSyB5UtPW_MpxtKb6HwF9cxDxEUflDqX4Wyk',
+        };
+        $.getJSON(service_url + '?callback=?', params, function (response) {
+          if (response.itemListElement.length == 0 || ((parseInt(response.itemListElement[0]['resultScore'], 10) < 10000) && (response.itemListElement[0]['result']['name'].toLowerCase() != item[0].toLowerCase()))) {
+            tags_generator.addInput([item[0], "", undefined]);
+          } else {
+            $.each(response.itemListElement, function (i, element) {
+              var name = element['result']['name']
+              var des = ""
+              var url = ""
+              if (typeof element['result']['description'] === 'undefined') {
+                des = element['result']['detailedDescription']['articleBody']
+              }
+              else {
+                des = element['result']['description']
+              }
+              url = element['result']['url']
+              tags_generator.addInput([name, des, url]);
+              $(function () {
+                $('[data-toggle="tooltip"]').tooltip({
+                  animated: 'fade',
+                  placement: 'top',
+                  html: true
+                })
+              })
+            });
+          }
+        });
+      });
+      // tags_generator.removeTags();
+      // tags_generator.removeTags();
+      // tags_generator.removeTags();
+      // tags_generator.removeTags();
+      // tags_generator.addInput([res.data.result[0][0],res.data.result[0][0]]);
+      // tags_generator.addInput([res.data.result[1][0],res.data.result[1][0]]);
+      // tags_generator.addInput([res.data.result[2][0],res.data.result[2][0]]);
+      // tags_generator.addInput([res.data.result[3][0],res.data.result[3][0]]);
+      $(function () {
+          $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'top',
+            html: true
+            })
+        })
+        $("#image1").attr("src",res.data.result[0][1][0])
+        $("#image2").attr("src",res.data.result[0][1][1])
+        $("#image3").attr("src",res.data.result[0][1][2])
+        $("#image4").attr("src",res.data.result[0][1][3])
+        $("#image5").attr("src",res.data.result[1][1][0])
+        $("#image6").attr("src",res.data.result[1][1][1])
+        $("#image7").attr("src",res.data.result[1][1][2])
+        $("#image8").attr("src",res.data.result[1][1][3])
+        $("#image9").attr("src",res.data.result[2][1][0])
+        $("#image10").attr("src",res.data.result[2][1][1])
+        $("#image11").attr("src",res.data.result[2][1][2])
+        $("#image12").attr("src",res.data.result[2][1][3])
+        $("#image13").attr("src",res.data.result[3][1][0])
+        $("#image14").attr("src",res.data.result[3][1][1])
+        $("#image15").attr("src",res.data.result[3][1][2])
+        $("#image16").attr("src",res.data.result[3][1][3])
+        // let slideImgs = $(this).find('#image'),
+        //   slideImgsCount = slideImgs.length,
+        //   currentIndex = 0;
 
-// });
-};
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-// document.addEventListener("DOMContentLoaded", function(event) {
-//    document.querySelectorAll('img').forEach(function(img){
-//     var count1=getRandomInt(4);
-//     var count2=getRandomInt(4);
-//     console.log(image_links)
-//     img.onerror = function(){this.src=image_links.data.result[count1][1][count2]};
-//    })
-// });
+        // slideImgs.eq(currentIndex).fadeIn();
 
-$('img').on("error", function() {
-  var count1=getRandomInt(4);
-  var count2=getRandomInt(4);
-  $(this).attr('src', image_links.data.result[count1][1][count2]);
-});
+        // setInterval(showNextSlide, 5000);
 
-$(".left-marquee").hover(function(){
-    $(".left-marquee").css("animation-play-state","paused");
-    },function(){
-    $(".left-marquee").css("animation-play-state","running");
-});
-$(".right-marquee").hover(function(){
-    $(".right-marquee").css("animation-play-state","paused");
-    },function(){
-    $(".right-marquee").css("animation-play-state","running");
-});
+        // function showNextSlide() {
+        //   let nextIndex = (currentIndex + 1) % slideImgsCount;
+        //   slideImgs.eq(currentIndex).fadeOut();
+        //   slideImgs.eq(nextIndex).fadeIn();
+        //   currentIndex = nextIndex;
+        // }
+
+      });
+      //       axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
+      //   .then((res) => {
+      //     console.log(res);
+
+      //     $("#summary").text(res.data.result);
+
+      // });
+    };
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+  // document.addEventListener("DOMContentLoaded", function(event) {
+  //    document.querySelectorAll('img').forEach(function(img){
+  //     var count1=getRandomInt(4);
+  //     var count2=getRandomInt(4);
+  //     console.log(image_links)
+  //     img.onerror = function(){this.src=image_links.data.result[count1][1][count2]};
+  //    })
+  // });
+
+  $('img').on("error", function () {
+    var count1 = getRandomInt(4);
+    var count2 = getRandomInt(4);
+    $(this).attr('src', image_links.data.result[count1][1][count2]);
+  });
+
+  $(".left-marquee").hover(function () {
+    $(".left-marquee").css("animation-play-state", "paused");
+  }, function () {
+    $(".left-marquee").css("animation-play-state", "running");
+  });
+  $(".right-marquee").hover(function () {
+    $(".right-marquee").css("animation-play-state", "paused");
+  }, function () {
+    $(".right-marquee").css("animation-play-state", "running");
+  });
+
+
+  var tags_generator = new Vue({
+    delimiters: ['%%%', '%%%'],
+    el: '#kw-vue',
+    name: 'Adding kw-tags',
+    data() {
+      return {
+        inputs: [],
+        exist_key: []
+      }
+    },
+    methods: {
+      addInput(e) {
+        if (!(this.exist_key.includes(e[0]))) {
+          this.inputs.push(e)
+          this.exist_key.push(e[0])
+        }
+      },
+      removeTags() {
+
+        this.inputs.shift()
+        this.exist_key.shift()
+      }
+    },
+    computed: {
+      buttonText() {
+        return this.showInput ? 'Hide input' : 'Show input'
+      }
+    },
+
+  })
+
+  function showIframe() {
+    /* Parent element */
+    var widget = document.createElement("div");
+    widget.style.position = "fixed";
+    widget.style.top = "100px";
+    widget.style.left = "100px";
+    widget.style.width = "800px";
+    widget.style.height = "600px";
+
+    /* picture uploading page frame */
+    var iframe = document.createElement("iframe");
+    iframe.src = "https://www.itread01.com/content/1542414730.html"; // use your picture upload URL here
+
+    /* Add to document */
+    widget.appendChild(iframe);
+    document.body.appendChild(widget);
+  }
+
+
+
+  // $('.slideshow').each(function(){
+
+  //   let slideImgs = $(this).find('img'),
+  //       slideImgsCount = slideImgs.length,
+  //       currentIndex = 0;
+
+  //   slideImgs.eq(currentIndex).fadeIn();
+
+  //   setInterval(showNextSlide, 5000);
+
+  //   function showNextSlide(){
+  //       let nextIndex = (currentIndex + 1) % slideImgsCount;
+  //       slideImgs.eq(currentIndex).fadeOut();
+  //       slideImgs.eq(nextIndex).fadeIn();
+  //       currentIndex = nextIndex;
+  //   }
+
+  // })
+
+  $('.slideshow').each(function () {
+
+    let slideImgs = $(this).find('img'),
+      slideImgsCount = slideImgs.length,
+      currentIndex = 0;
+
+    slideImgs.eq(currentIndex).fadeIn();
+
+    setInterval(showNextSlide, 5000);
+
+    function showNextSlide() {
+      let nextIndex = (currentIndex + 1) % slideImgsCount;
+      slideImgs.eq(currentIndex).fadeOut();
+      slideImgs.eq(nextIndex).fadeIn();
+      currentIndex = nextIndex;
+    }
+
+  })
