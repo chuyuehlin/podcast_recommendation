@@ -2,6 +2,7 @@ Vue.use(VueInstantSearch);
 
 var app = new Vue({
     el: '#app',
+    delimiters: ["[[", "]]"],
     data: {
         searchClient: instantMeiliSearch(
             'http://localhost:7700',
