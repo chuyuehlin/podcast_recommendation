@@ -35,7 +35,7 @@
 } @keyframes previewExpand {
     100% {
         width: 1160px;
-        height: 680px;
+        height: 670px;
         left: -42%;
         margin-top: 280px;
         margin-bottom: 230px;
@@ -74,7 +74,7 @@
     transform: rotateY(0deg);
 }
 
-img {
+.poster {
     height: 350px; 
     width: 350px;
     border-radius: 1.2rem 1.2rem 0 0;
@@ -146,7 +146,7 @@ img {
     white-space: normal;
 }
 
-.description, .summary{
+.description{
     opacity: 0;
     font-family: 'Nunito Sans', sans-serif;
     position: absolute;
@@ -159,6 +159,34 @@ img {
     line-height: 24px;
     color:#DEDEDE;
 
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+}
+
+.summary{
+    position: absolute;
+    opacity: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    height: 165px;
+    top: 230px;
+    bottom: 30px;
+    left: 5%;
+    right: 5%;
+    font-size: 15px;
+    line-height: 24px;
+    
+    background-color: #f2f2f2;
+    border-radius: 15px;
+   
+    /*     
+    outline: 3px solid white;
+    color: #DEDEDE;
+     */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -182,13 +210,11 @@ img {
 }
 .description .ais-Highlight {
     color:white;
-    font-size: 1
-    5px;
+    font-size: 15px;
 }
 .summary .ais-Highlight {
-    color:white;
-    font-size: 1
-    5px;
+    color: black;
+    font-size: 15px;
 }
 
 .hit-publisher .ais-Highlight-highlighted {
@@ -215,6 +241,16 @@ img {
     color:white;
     font-size: 15px;
     background: linear-gradient(to bottom,transparent,transparent 0%,#B0120F 50%,#B0120F 80%,transparent 80%);
+}
+
+.summary-tag {
+    position: absolute;
+    left: 56%;
+    top: 72%;
+    color: #293844;
+    font-size: 15px;
+    font-weight: bolder;
+    opacity: 0.5;
 }
 
 .previewShowname {
@@ -316,7 +352,7 @@ img {
 
 .previewSummary {
     animation-name: summaryExpand;
-    animation-duration: 0.6s;
+    animation-duration: 0.4s;
     animation-delay: 0.3s;
     animation-fill-mode: forwards;
 } @keyframes summaryExpand {
@@ -326,7 +362,7 @@ img {
         opacity: 0;
     }
     100% {
-        top: 72%;
+        top: 70%;
         left: 44%;
         opacity: 0.9;
     }
@@ -357,19 +393,68 @@ img {
     }
 }
 
-.playInPoster {
-    opacity: 0.3;
-    top: 80px;
-    left: 90px;
+/* audio player */
+
+.audioPlayer {
+    position: absolute;
+    top: 140px;
+    left: 160px;
+    visibility: hidden;
+    z-index: 10;
 }
 
-.link:hover .hint {
-    animation-name: playInPosterHint;
+.previewPlayer {
+    visibility: visible;
+    opacity: 0;
+}
+
+.focusPlayer {
+    animation-name: playerFocus;
+    animation-delay: 0.1s;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+} @keyframes playerFocus {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.fadePlayer {
+    animation-name: playerFade;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+} @keyframes playerFade {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.playInPoster {
+    position: absolute;
+    top: 30px;
+    left: 20px;
+    cursor: pointer;
+    opacity: 0.4;
+}
+
+.play-icon:hover .hint {
+    animation-name: playerHint;
     animation-delay: 1s;
     animation-fill-mode: forwards;
-    top: 40%;
-    left: 25%;
-    z-index: 10;
-} @keyframes playInPosterHint {
+} @keyframes playerHint {
     to { visibility: visible; }
+}
+
+.link {
+    position: absolute;
+    top: 80%;
+    left: 12%;
+    z-index: 10;
+    border-radius: 1.2rem 1.2rem 0 0;
+}
+
+.btnText {
+    font-size: 15px;
+    font-weight: 700;
+    width: 250px;
+    height: 49px;
+    border-radius: 32px;
 }

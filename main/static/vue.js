@@ -28,6 +28,8 @@ var app = new Vue({
         focus: null, 
         preview: null,
         fade: null,
+        focusAudio: null,
+        fadeAudio: null,
         // change episode by key
         nextEpisode: null,
         lastEpisode: null,
@@ -85,7 +87,9 @@ var app = new Vue({
         scrollHitsBottom: function(newS, oldS) {
             if(newS) this.loadMore();
         },
-        currentTime: function(val) {}
+        currentTime: function(val) {},
+        focusAudio: function(val) {},
+        fadeAudio: function(val) {}
     },
     methods: {
         // add scroll eventlistener to infiniteHits

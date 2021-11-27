@@ -9,7 +9,7 @@
   <body>
     <main id="app" class="main" @click="firstclick = true">
       <ais-instant-search ref="instantSearch"
-        index-name="podcast"
+        index-name="only7"
         :search-function="this.searchFunction"
         :initial-ui-state="this.initialUiState"
         :search-client="searchClient">
@@ -49,10 +49,30 @@
                     previewPoster : lock === false && preview === item.episode_uri,
                     fadePoster : lock === false && preview === null && focus === null && fade === item.episode_uri
                   }"/>
-                  <a class="link" :href="'http://localhost:5000/episode/'+item.episode_uri">
-                    <img class="playInPoster" src="../static/play.png" v-if="preview === item.episode_uri" />
-                    <span class="hint">Listen full episode</span>
-                  </a>
+                  <!-- audio player -->
+                  <div class="audioPlayer" :ref="item.episode_uri+'player'"
+                    @mouseover="focusAudio = item.episode_uri, fadeAudio = null"
+                    @mouseleave="focusAudio = null, fadeAudio = item.episode_uri"
+                    :class="{ 
+                      previewPlayer : lock === false && preview == item.episode_uri,
+                      focusPlayer : lock === false && focusAudio === item.episode_uri,
+                      fadePlayer : lock === false && focusAudio === null && fadeAudio === item.episode_uri
+                    }">
+                    <audio type="audio/mpeg" 
+                      :src="item.episode_audio+'.mp3'" 
+                      :ref="item.episode_uri+'audio'"
+                      @timeupdate="updateTime(item.episode_uri)"
+                    ></audio>
+                    <span class="play-icon">
+                      <div class="round-slider">
+                        <div class="selection"></div>
+                        <div class="holder" style="color: hsl(120, 100%, 50%);"></div>
+                      </div>
+                      <i class="playInPoster fas fa-play-circle fa-10x" @click="playAudio(item.episode_uri)" v-if="!playing"></i>
+                      <i class="playInPoster fas fa-stop-circle fa-10x" @click="stopAudio(item.episode_uri)" v-if="playing"></i>
+                      <span class="hint">play 30 sec preview</span>
+                    </span>
+                  </div>
                 </div>
                 <div class="info">
                   <p class="hit-showname" :ref="item.episode_uri+'showname'"
@@ -83,60 +103,14 @@
                 </div>
                 <div class="summary" :ref="item.episode_uri+'summary'"
                   :class="{ previewSummary : lock === false && preview === item.episode_uri }">
-                  Auto Summarization:    
-                  <!-- <ais-highlight attribute="episode_summary" :hit="item" /> {{ item.episode_summary }} -->
-                </div>
-                <!-- audio player -->
-                <div class="audioPlayer" :ref="item.episode_uri+'player'" 
-                  :class="{ previewPlayer : preview == item.episode_uri }">
-                  <audio type="audio/mpeg" 
-                    :src="item.episode_audio+'.mp3'"
-                    :ref="item.episode_uri+'audio'"
-                    @timeupdate="updateTime(item.episode_uri)"
-                  ></audio>
-                  <span class="backward-icon">
-                    <i class="fas fa-backward fa-2x"
-                      @click="timeChange(item.episode_uri, -5)"
-                    ></i>
-                  </span>
-                  <span class="play-icon">
-                    <i class="fas fa-play-circle fa-3x" 
-                      @click="playAudio(item.episode_uri)"
-                      v-if="!playing"
-                    ></i>
-                    <i class="fas fa-pause-circle fa-3x" 
-                      @click="stopAudio(item.episode_uri)"
-                      v-if="playing"
-                    ></i>
-                    <span class="hint">play 30 sec preview</span>
-                  </span>
-                  <span class="forward-icon">
-                    <i class="fas fa-forward fa-2x"
-                      @click="timeChange(item.episode_uri, 5)"
-                    ></i>
-                  <span class="duration">
-                    {{ renderTime }}
-                  </span>
-                  <span class="volume-icon">
-                    <i class="fas fa-volume-up fa-2x"
-                      @click="volumeChange(item.episode_uri, 'mute')"
-                      v-if="volume === 'up'"
-                    ></i>
-                    <i class="fas fa-volume-down fa-2x"
-                      @click="volumeChange(item.episode_uri, 'up')"
-                      v-if="volume === 'down'"
-                    ></i>
-                    <i class="fas fa-volume-off fa-2x"
-                      @click="volumeChange(item.episode_uri, 'down')"
-                      v-if="volume === 'off'"
-                    ></i>
-                    <i class="fas fa-volume-mute fa-2x"
-                      @click="volumeChange(item.episode_uri, 'off')"
-                      v-if="volume === 'mute'"
-                    ></i>
-                  </span>
+                  <br>&nbsp;&nbsp;&nbsp; <ais-highlight attribute="summary" :hit="item" /> {{ item.summary }}
+                  <p class="summary-tag">summarization by NLP model</p>
                 </div>
               </div>
+              <form class="link" v-if="preview === item.episode_uri"
+                :action="'http://localhost:5000/episode/'+item.episode_uri">
+                <button class="btnText" type="submit" value="Go to Google">Play Full Episode</button>
+              </form>
             </div>
           </template>
         </ais-infinite-hits>
@@ -169,8 +143,9 @@
   <script src="https://unpkg.com/vue-instantsearch@4.1.1/vue2/umd/index.js"></script>
   <!-- local Vue js -->
   <script src="../static/vue.js"></script>
+  <script src="../static/roundslider.js"></script>
   <!-- local css -->    
   <link rel="stylesheet" href="../static/reset.css">
   <link rel="stylesheet" href="../static/card.css">
-  <link rel="stylesheet" href="../static/player.css">
+  <link rel="stylesheet" href="../static/roundslider.css">
 </html>
