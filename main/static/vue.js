@@ -41,7 +41,8 @@ var app = new Vue({
         // 'up', 'down', 'off', 'mute'
         volume: "off",
         currentTime: 0,
-        renderTime: "0:30"
+        renderTime: "0:30",
+        sliderValue: 0
     },
     watch: {
         // change params to do first click animations
@@ -90,7 +91,8 @@ var app = new Vue({
         },
         currentTime: function(val) {},
         focusAudio: function(val) {},
-        fadeAudio: function(val) {}
+        fadeAudio: function(val) {},
+        sliderValue: function(val) {}
     },
     methods: {
         // add scroll eventlistener to infiniteHits
@@ -199,7 +201,6 @@ var app = new Vue({
         },
         volumeChange(uri, volume) {
             this.volume = volume;
-
             if(volume == "up")
                 this.$refs[uri+'audio'][0].volume = 1;
             else if(volume == "down")
@@ -210,14 +211,16 @@ var app = new Vue({
                 this.$refs[uri+'audio'][0].volume = 0;
         },
         updateTime(uri) {
-            this.currentTime = Math.round(this.$refs[uri+'audio'][0].currentTime);
-            this.renderTime = "0:" + ('00'+(30-this.currentTime)).slice(-2);
+            this.currentTime = Math.round(this.$refs[uri+'audio'][0].currentTime*10)/10;
+            this.renderTime = "0:" + ('00'+(30-Math.round(this.currentTime))).slice(-2);
+            this.sliderValue = this.currentTime*100/30;
             // change icon to stop when audio ends
             if(this.$refs[uri+'audio'][0].ended) {
                 this.stopAudio(uri);
                 this.$refs[uri+'audio'].currentTime = 0;
                 this.currentTime = 0;
                 this.renderTime = "0:30";
+                this.sliderValue = 0;
             }
         },
         timeChange(uri, sec) {

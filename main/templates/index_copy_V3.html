@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/templates/basic_search.css" />
     <script src="https://kit.fontawesome.com/257e3ba356.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
   
   <body>
@@ -51,23 +52,26 @@
                   }"/>
                   <!-- audio player -->
                   <div class="audioPlayer" :ref="item.episode_uri+'player'"
-                    @mouseover="focusAudio = item.episode_uri, fadeAudio = null"
-                    @mouseleave="focusAudio = null, fadeAudio = item.episode_uri"
+                    @mouseover="focusAudio = item.episode_uri"
+                    @mouseleave="focusAudio = null"
                     :class="{ 
                       previewPlayer : lock === false && preview == item.episode_uri,
                       focusPlayer : lock === false && focusAudio === item.episode_uri,
-                      fadePlayer : lock === false && focusAudio === null && fadeAudio === item.episode_uri
+                      fadePlayer : focusAudio === null
                     }">
                     <audio type="audio/mpeg" 
-                      :src="item.episode_audio+'.mp3'" 
-                      :ref="item.episode_uri+'audio'"
-                      @timeupdate="updateTime(item.episode_uri)"
+                    :src="item.episode_audio+'.mp3'" 
+                    :ref="item.episode_uri+'audio'"
+                    @timeupdate="updateTime(item.episode_uri)"
                     ></audio>
+                    <round-slider
+                      v-model="sliderValue"
+                      start-angle="90"
+                      width="28"
+                      handle-size="0"
+                      show-tooltip="false"
+                    ></round-slider>
                     <span class="play-icon">
-                      <div class="round-slider">
-                        <div class="selection"></div>
-                        <div class="holder" style="color: hsl(120, 100%, 50%);"></div>
-                      </div>
                       <i class="playInPoster fas fa-play-circle fa-10x" @click="playAudio(item.episode_uri)" v-if="!playing"></i>
                       <i class="playInPoster fas fa-stop-circle fa-10x" @click="stopAudio(item.episode_uri)" v-if="playing"></i>
                       <span class="hint">play 30 sec preview</span>
@@ -103,8 +107,8 @@
                 </div>
                 <div class="summary" :ref="item.episode_uri+'summary'"
                   :class="{ previewSummary : lock === false && preview === item.episode_uri }">
-                  <br>&nbsp;&nbsp;&nbsp; <ais-highlight attribute="summary" :hit="item" /> [[ item.summary ]]
                   <p class="summary-tag">summarization by NLP model</p>
+                  <br>&nbsp;&nbsp;&nbsp; <ais-highlight attribute="summary" :hit="item" /> [[ item.summary ]]
                 </div>
               </div>
               <form class="link" v-if="preview === item.episode_uri"
@@ -139,13 +143,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch@0.3.2/dist/instant-meilisearch.umd.min.js"></script>
   <!-- Vue CDN -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <!-- Vue-round-slider CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-round-slider@1.0.1/dist/vue-roundslider.min.js"></script>
   <!-- vue-instant-search CDN -->
   <script src="https://unpkg.com/vue-instantsearch@4.1.1/vue2/umd/index.js"></script>
   <!-- local Vue js -->
   <script src="../static/vue.js"></script>
-  <script src="../static/roundslider.js"></script>
-  <!-- local css -->    
+  <!-- local css -->
   <link rel="stylesheet" href="../static/reset.css">
   <link rel="stylesheet" href="../static/card.css">
-  <link rel="stylesheet" href="../static/roundslider.css">
-</html>
+  </html>
