@@ -32,10 +32,13 @@
     <!-- 推薦卡片樣式 -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.0.1/tailwind.min.css'>
 
+    <!-- 右邊卡片式推薦episode的scss黨檔 -->
+    <!-- <link href="./../static/card.scss" rel="stylesheet"> -->
+
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=8" rel="stylesheet">
+    <link href="/static/demo3player.css?v=1" rel="stylesheet">
 
 
 </head>
@@ -110,7 +113,7 @@
                         <!-- class="pbtn lg neu buttons"  -->
                         <button class="pbtn lg neu buttons" onclick="playPause()">
                             <!-- <i class="fas fa-play" id="play-pause"></i> -->
-                            <i class="fas fa-play-circle fa-7x" id="play-pause"></i>
+                            <i class="fas fa-play-circle fa-4x" id="play-pause"></i>
                         </button>
 
 
@@ -123,7 +126,7 @@
                 </div>
                 <!-- 這裡是可拉episode長短的地方 -->
                 <div class="row">
-                    <div class="col-md-2" style="margin-left:310px ; margin-top: -300px; z-index: 3; width: 500px; ">
+                    <div class="col-md-2" style="margin-left:310px ; margin-top: 50px; z-index: 3; width: 500px; ">
                         <div class="track neu" id="outside">
 
                             <div id="inside" style="bottom: 1000px ; ">
@@ -148,7 +151,7 @@
 
                 <!-- Keywords推薦 -->
                 <div class="row" style="height:15%;margin:2px;" id="kw-vue">
-                    <div class="col-md-12" style="margin-top: 0px;">
+                    <div class="col-md-12" style="top: 50px;">
                         <transition-group name="list-complete" tag="p">
                             <button style="margin:5px ;" v-for="input in inputs" v-bind:key="input[0]" type="button"
                                 :class="input[3]" data-toggle="tooltip" :title="input[1]">
@@ -166,13 +169,13 @@
             <div class="col">
                 <!-- 右邊推薦episode卡片的地方 -->
                 <div class="episode-card-wrapper">
-                    <a href="#" class="episode-card">
+                    <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="50px" height="50px" loading="lazy" src="{{ message["poster"] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][0]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message["episode_name"] }}</h3>
+                                <h3 class="title">{{ message['recommendation'][0]['episode_name'] }}</h3>
                                 <div class="info">
                                     <span class="icon-explicit"></span>
                                     <span class="channel"></span>
@@ -180,18 +183,133 @@
                             </div>
                         </div>
                         <div class="card-content">
-                            <p class="description">{{ message["episode_description"] }}</p>
+                            <p class="description">{{ message['recommendation'][0]['episode_description'] }}</p>
                         </div>
-                        <div class="card-footer">
+                        <!-- <div class="card-footer">
                             <span class="date">2021-03-16</span>
                             <span class="duration">35 mins</span>
-                        </div>
+                        </div> -->
 
                     </a>
 
                 </div>
 
+                <div class="episode-card-wrapper">
+                    <a href="/episode/{{ message['recommendation'][1]['episode_uri'] }}" class="episode-card">
+                        <div class="card-header">
+                            <div class="cover-image-wrapper">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][1]['poster'] }}">
+                            </div>
+                            <div class="episode-info-wrapper">
+                                <h3 class="title">{{ message["recommendation"][1]['episode_name'] }}</h3>
+                                <div class="info">
+                                    <span class="icon-explicit"></span>
+                                    <span class="channel"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="description">{{ message["recommendation"][1]['episode_description'] }}</p>
+                        </div>
+                        <!-- <div class="card-footer">
+                            <span class="date">2021-03-16</span>
+                            <span class="duration">35 mins</span>
+                        </div> -->
+
+                    </a>
+
+                </div>
+
+                <div class="episode-card-wrapper">
+                    <a href="/episode/{{ message['recommendation'][2]['episode_uri'] }}" class="episode-card">
+                        <div class="card-header">
+                            <div class="cover-image-wrapper">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][2]['poster'] }}">
+                            </div>
+                            <div class="episode-info-wrapper">
+                                <h3 class="title">{{ message["recommendation"][2]['episode_name'] }}</h3>
+                                <div class="info">
+                                    <span class="icon-explicit"></span>
+                                    <span class="channel"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="description">{{ message["recommendation"][2]['episode_description'] }}</p>
+                        </div>
+                        <!-- <div class="card-footer">
+                            <span class="date">2021-03-16</span>
+                            <span class="duration">35 mins</span>
+                        </div> -->
+
+                    </a>
+
+                </div>
+
+                <div class="episode-card-wrapper">
+                    <a href="/episode/{{ message['recommendation'][3]['episode_uri'] }}" class="episode-card">
+                        <div class="card-header">
+                            <div class="cover-image-wrapper">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][3]['poster'] }}">
+                            </div>
+                            <div class="episode-info-wrapper">
+                                <h3 class="title">{{ message["recommendation"][3]['episode_name'] }}</h3>
+                                <div class="info">
+                                    <span class="icon-explicit"></span>
+                                    <span class="channel"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="description">{{ message["recommendation"][3]['episode_description'] }}</p>
+                        </div>
+                        <!-- <div class="card-footer">
+                            <span class="date">2021-03-16</span>
+                            <span class="duration">35 mins</span>
+                        </div> -->
+
+                    </a>
+
+                </div>
+
+                <div class="episode-card-wrapper">
+                    <a href="/episode/{{ message['recommendation'][4]['episode_uri'] }}" class="episode-card">
+                        <div class="card-header">
+                            <div class="cover-image-wrapper">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][4]['poster'] }}">
+                            </div>
+                            <div class="episode-info-wrapper">
+                                <h3 class="title">{{ message["recommendation"][4]['episode_name'] }}</h3>
+                                <div class="info">
+                                    <span class="icon-explicit"></span>
+                                    <span class="channel"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="description">{{ message["recommendation"][4]['episode_description'] }}</p>
+                        </div>
+                        <!-- <div class="card-footer">
+                            <span class="date">2021-03-16</span>
+                            <span class="duration">35 mins</span>
+                        </div> -->
+
+                    </a>
+
+                </div>
+
+                
+
+                
+
+
+                
+
+
+
             </div>
+
+
 
 
         </div>
