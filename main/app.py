@@ -11,9 +11,11 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from bing_image_downloader.downloader import download, get_all_link
 from keybert import KeyBERT
-
+import spacy
+from spacy.matcher import Matcher
+import pke
 #Debug logger
-import logging 
+import logging
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 
@@ -26,6 +28,15 @@ root.addHandler(ch)
 
 app = Flask(__name__)
 model = KeyBERT(model='paraphrase-MiniLM-L6-v2')
+nlp = spacy.load('en_core_web_trf')
+patterns = [
+	[{"DEP": "compound","OP": "*"}, {"POS": "NOUN"}],
+	[{"DEP": "compound","OP": "*"}, {"POS": "PROPN"}],
+
+	]
+matcher = Matcher(nlp.vocab)
+matcher.add("NOUN", [patterns[0]])
+matcher.add("PROPN", [patterns[1]])
 episodes_cache=dict()
 
 database_url="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bonsaisearch.net/"
@@ -36,10 +47,13 @@ def home():
 
 @app.route('/episode/<string:episodeID>')
 def episode(episodeID):
-	outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
-	outcome = outcome.json()
-	outcome = outcome["_source"]
-
+	try:
+		outcome = episodes_cache[episodeID]
+	except:
+		outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
+		outcome = outcome.json()
+		outcome = outcome["_source"]
+		episodes_cache.update({episodeID:outcome})
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
 	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"]}
@@ -47,10 +61,7 @@ def episode(episodeID):
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')
 def recommend_image(episodeID,time):
-	outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
-	outcome = outcome.json()
-	outcome = outcome["_source"]
-
+	outcome=episodes_cache[episodeID]
 	interval=30  #可調整
 	start = int(float(time))-interval
 	end = int(float(time))+interval
@@ -68,9 +79,14 @@ def recommend_image(episodeID,time):
 	end_fragment = end_fragment.split(" ")
 	text = start_fragment[int(len(start_fragment)*(start%120)/120):] + end_fragment[:int(len(end_fragment)*(end%120)/120)]
 	text = " ".join(text)
-
-
-	keywords = model.extract_keywords(text, keyphrase_ngram_range=(1, 2), top_n=4) #ngram影響速度 
+	keywords=[]
+	extractor = pke.unsupervised.SingleRank()
+	extractor.load_document(text, language='en')
+	extractor.candidate_selection()
+	extractor.candidate_weighting(window=5)
+	doc = nlp(text)
+	keywords = keywords+ list(set([(ee.text.lower(),0) for ee in doc.ents if ee.label_ == 'PERSON' or ee.label_ == 'ORG' or ee.label_ == 'GPE']))
+	keywords = keywords+ extractor.get_n_best(n=4)
 	links=[]
 	for i in keywords:
 		tmp=[]
@@ -82,7 +98,7 @@ def recommend_image(episodeID,time):
 		tmp.append(get_all_link(query_string, limit=4,  output_dir='dataset', adult_filter_off=False, force_replace=False, timeout=60, verbose=False))  #adult可改
 		print(tmp)
 		links.append(tmp)
-	return {"result":links} 
+	return {"result":links}
 
 #launch a Tornado server with HTTPServer.
 if __name__ == "__main__":
