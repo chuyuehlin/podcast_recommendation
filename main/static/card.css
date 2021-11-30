@@ -436,6 +436,9 @@
 }
 
 .rs-control {
+    position: absolute;
+    top: 0px;
+    left: 0px;
     opacity: 0.7;
 }
 
@@ -452,6 +455,7 @@
     top: 80%;
     left: 12%;
     z-index: 10;
+    cursor: pointer;
     border-radius: 1.2rem 1.2rem 0 0;
 }
 
