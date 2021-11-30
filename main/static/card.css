@@ -442,6 +442,10 @@
     opacity: 0.7;
 }
 
+.play-icon {
+    font-size: 16px;
+}
+
 .play-icon:hover .hint {
     animation-name: playerHint;
     animation-delay: 1s;
