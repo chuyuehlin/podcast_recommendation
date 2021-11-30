@@ -69,7 +69,7 @@
     position: absolute;
     border-radius: 1.2rem;
     
-    background-color: #161629;
+    background-color: #FFFFFF;
     transition: .6s;
     transform: rotateY(0deg);
 }
@@ -197,19 +197,19 @@
 }
 
 .hit-publisher .ais-Highlight {
-    color:gray;;
+    color:gray;
     font-size: 15px;
 }
 .hit-showname .ais-Highlight {
-    color:white;
+    color:black;
     font-size: 20px;
 }
 .hit-episode .ais-Highlight {
-    color:white;
+    color: #da3c36;
     font-size: 33px;
 }
 .description .ais-Highlight {
-    color:white;
+    color:black;
     font-size: 15px;
 }
 .summary .ais-Highlight {
@@ -461,4 +461,7 @@
     width: 250px;
     height: 49px;
     border-radius: 32px;
+    border-style: none;
+    background-color: #da3c36;
+    color: #FFFFFF;
 }
