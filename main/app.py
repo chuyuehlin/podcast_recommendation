@@ -34,7 +34,6 @@ database_url="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bonsaisearch
 def home():
 	return render_template('index_copy_V3.html')
 
-
 @app.route('/episode/<string:episodeID>')
 def episode(episodeID):
 	outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
@@ -43,9 +42,8 @@ def episode(episodeID):
 
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
-	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"]}
+	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"]}
 	return render_template('demo3player.html', message=message)
-
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')
 def recommend_image(episodeID,time):
