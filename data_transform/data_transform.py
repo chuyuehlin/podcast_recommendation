@@ -96,7 +96,7 @@ with open('/Users/chuyueh/課程/專題/json/recommend.json') as recon:
 				abs_f = json.load(abs_f)
 
 				#metadata 的 json file
-				with open('/Users/chuyueh/課程/專題/json/only7.json') as f:
+				with open('/Users/chuyueh/課程/專題/json/metadata_7only.json') as f:
 					f = json.load(f)
 
 					for row in f:

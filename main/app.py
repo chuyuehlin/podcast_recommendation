@@ -39,7 +39,8 @@ matcher.add("NOUN", [patterns[0]])
 matcher.add("PROPN", [patterns[1]])
 episodes_cache=dict()
 
-database_url="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bonsaisearch.net/"
+database_url='https://s1uunigu33:w76fgn8dce@birch-68438726.us-east-1.bonsaisearch.net/'
+database_url_captions="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bonsaisearch.net/"
 
 @app.route('/')
 def home():
@@ -54,9 +55,14 @@ def episode(episodeID):
 		outcome = outcome.json()
 		outcome = outcome["_source"]
 		episodes_cache.update({episodeID:outcome})
+
+	captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
+	captions = captions.json()
+	captions = captions["_source"]
+
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
-	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"]}
+	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"],"captions":captions["captions"]}
 	return render_template('demo3player.html', message=message)
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')
