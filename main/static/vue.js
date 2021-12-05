@@ -1,5 +1,7 @@
 Vue.use(VueInstantSearch);
 
+window['vue-js-toggle-button'].default.install(Vue);
+
 var app = new Vue({
     el: '#app',
     delimiters: ["[[", "]]"],
@@ -42,7 +44,19 @@ var app = new Vue({
         volume: "off",
         currentTime: 0,
         renderTime: "0:30",
-        sliderValue: 0
+        // roundslider
+        sliderValue: 0,
+        // toggle button
+        darkmode: false,
+        color: "#FCF7F4",
+        lightBackground: "#FCF7F4",
+        lightItem: "#FFFFFF",
+        lightText: "#da3c36",
+        darkBackground: "#434343",
+        darkBar: "#1b1b1b",
+        darkItem: "#727272",
+        darkText: "#FFFFFF",
+        black: "#000000"
     },
     watch: {
         // change params to do first click animations

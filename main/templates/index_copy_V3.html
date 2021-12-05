@@ -14,13 +14,17 @@
         :search-function="this.searchFunction"
         :initial-ui-state="this.initialUiState"
         :search-client="searchClient">
-        <div class="upBlock" :class="{ moveUpBlock: firstclick }">
-          <p class="title" :class="{ movingTitle: firstclick}">
+        <div class="upBlock" 
+          :class="{ moveUpBlock: firstclick }"
+          :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: lightBackground}]">
+          <p class="title" 
+            :class="{ movingTitle: firstclick}"
+            :style="[darkmode ? {color: darkText} : {color: lightText}]">
              [[ title ]]
           </p>
           <ais-search-box ref="searchBox" autofocus
-            :class="{ movingSearchbox: firstclick }"
             placeholder="Search podcast as you type ..."
+            :class="{ movingSearchbox: firstclick }"
             :class-names="{
               'ais-SearchBox-submit': 'submitBtn',
               'ais-SearchBox-submitIcon': 'submitIcon',
@@ -29,9 +33,17 @@
               'ais-SearchBox-resetIcon': 'resetIcon',
             }"
           ></ais-search-box>
+          <toggle-button :value="false"
+            :labels="{checked: 'Dark', unchecked: 'Light'}"
+            :width="100" :height="44"
+            :color="{checked: darkItem, unchecked: '#d0d0ce'}"
+            v-model="darkmode"
+            v-if="firstclick"
+          ></toggle-button>
         </div>
         <ais-infinite-hits ref="infiniteHits" v-show="firstclick"
-          :class="{ displayHits : firstclick }">
+          :class="{ displayHits : firstclick }"
+          :style="[ darkmode ? {backgroundColor: darkBackground} : {backgroundColor: lightBackground}]">
           <template #default="{ items, isLastPage, refineNext }">
             <div v-for="item in items" class="row"
               @click="preview = item.episode_uri" 
@@ -43,7 +55,7 @@
                 previewEpisode : lock === false && preview === item.episode_uri,
                 fadeEpisode : lock === false && preview === null && focus === null && fade === item.episode_uri
               }">
-              <div class="front">
+              <div class="front" :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: lightItem}]">
                 <div class="img">
                   <img class="poster" :src="item.poster" :ref="item.episode_uri+'poster'"
                   :class="{
@@ -60,9 +72,9 @@
                       fadePlayer : focusAudio === null
                     }">
                     <audio type="audio/mpeg" 
-                    :src="item.episode_audio+'.mp3'" 
-                    :ref="item.episode_uri+'audio'"
-                    @timeupdate="updateTime(item.episode_uri)"
+                      :src="item.episode_audio+'.mp3'" 
+                      :ref="item.episode_uri+'audio'"
+                      @timeupdate="updateTime(item.episode_uri)"
                     ></audio>
                     <round-slider
                       v-model="sliderValue"
@@ -70,11 +82,12 @@
                       width="28"
                       radius="105"
                       handle-size="0"
+                      range-color="#AAAAAA"
                       show-tooltip="false"
                     ></round-slider>
                     <span class="play-icon">
                       <i class="playInPoster fas fa-play-circle fa-10x" @click="playAudio(item.episode_uri)" v-if="!playing"></i>
-                      <i class="playInPoster fas fa-stop-circle fa-10x" @click="stopAudio(item.episode_uri)" v-if="playing"></i>
+                      <i class="playInPoster fas fa-pause-circle fa-10x" @click="stopAudio(item.episode_uri)" v-if="playing"></i>
                       <span class="hint">play 30 sec preview</span>
                     </span>
                   </div>
@@ -85,42 +98,63 @@
                       previewShowname : lock === false && preview === item.episode_uri,
                       fadeShowname : lock === false && preview === null && focus === null && fade === item.episode_uri
                     }">
-                    <ais-highlight attribute="show_name" :hit="item" /> [[ item.show_name ]]
+                    <ais-highlight attribute="show_name" :hit="item"
+                      :class="{darkmodeShowname: darkmode}" 
+                      :style="[darkmode ? {color: darkText} : {color: lightText}]"
+                    /> [[ item.show_name ]]
                   </p>
                   <p class="hit-publisher" :ref="item.episode_uri+'publisher'"
                     :class="{ 
                       previewPublisher : lock === false && preview === item.episode_uri,
                       fadePublisher: lock === false && preview === null && focus === null && fade === item.episode_uri
                     }">
-                    <ais-highlight attribute="publisher" :hit="item" /> [[ item.publisher ]]
+                    <ais-highlight attribute="publisher" :hit="item" 
+                      :class="{darkmodePublisher: darkmode}" 
+                    /> [[ item.publisher ]]
                   </p>
                   <p class="hit-episode" :ref="item.episode_uri+'episodename'"
                     :class="{
                       previewEpisodeName : lock === false && preview === item.episode_uri,
                       fadeEpisodeName: lock === false && preview === null && focus === null && fade === item.episode_uri
                     }">
-                    <ais-highlight attribute="episode_name" :hit="item" /> [[ item.episode_name ]]
+                    <ais-highlight attribute="episode_name" :hit="item" 
+                      :style="[darkmode ? {color: darkText} : {color: lightText}]"
+                      :class="{darkmodeEpisode: darkmode}" 
+                    /> [[ item.episode_name ]]
                   </p>
                 </div>
                 <div class="description" :ref="item.episode_uri+'description'"
                   :class="{ previewDescription : lock === false && preview === item.episode_uri }">
-                  <ais-highlight attribute="episode_description" :hit="item" /> [[ item.episode_description ]]
+                  <ais-highlight attribute="episode_description" :hit="item"
+                    :class="{darkmodeDescription: darkmode}" 
+                    :style="[darkmode ? {color: darkText} : {color: black}]"
+                  /> [[ item.episode_description ]]
                 </div>
                 <div class="summary" :ref="item.episode_uri+'summary'"
-                  :class="{ previewSummary : lock === false && preview === item.episode_uri }">
-                  <p class="summary-tag">summarization by NLP model</p>
-                  <br>&nbsp;&nbsp;&nbsp; <ais-highlight attribute="summary" :hit="item" /> [[ item.summary ]]
+                  :class="{ previewSummary : lock === false && preview === item.episode_uri }"
+                  :style="[darkmode ? {backgroundColor: darkBackground} : {backgroundColor: '#f2f2f2'}]">
+                  <p class="summary-tag"
+                    :style="[darkmode ? {color: darkText} : {color: '#293844'}]"
+                  >summarization by NLP model</p>
+                  <ais-highlight attribute="summary" :hit="item" 
+                    :class="{darkmodeSummary: darkmode}" 
+                    :style="[darkmode ? {color: darkText} : {color: black}]"
+                  /> [[ item.summary ]]
                 </div>
               </div>
               <form class="link" v-if="preview === item.episode_uri"
                 :action="'http://localhost:5000/episode/'+item.episode_uri">
-                <button class="btnText" type="submit" value="Go to Google">Play Full Episode</button>
+                <button class="btnText" type="submit" value="Go to Google"
+                  :style="[darkmode ? {backgroundColor: darkItem} : {backgroundColor: lightText}]"
+                >Play Full Episode</button>
               </form>
             </div>
           </template>
         </ais-infinite-hits>
-        <div class="downBlock" :class="{ moveDownBlock: firstclick }">
-        </div>
+        <div class="downBlock" 
+          :class="{ moveDownBlock: firstclick }"
+          :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: '#FCF7F4'}]"
+        ></div>
       </ais-instant-search>
       <!-- floating arrows -->
       <div class="floatingArrow" v-show="firstclick" :class="{ displayArrow : firstclick }">
@@ -146,11 +180,12 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
   <!-- Vue-round-slider CDN -->
   <script src="https://cdn.jsdelivr.net/npm/vue-round-slider@1.0.1/dist/vue-roundslider.min.js"></script>
+  <!-- Vue-toggle-switch CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-js-toggle-button@1.3.3/dist/index.min.js"></script>
   <!-- vue-instant-search CDN -->
   <script src="https://unpkg.com/vue-instantsearch@4.1.1/vue2/umd/index.js"></script>
   <!-- local Vue js -->
   <script src="../static/vue.js"></script>
   <!-- local css -->
   <link rel="stylesheet" href="../static/reset.css">
-  <link rel="stylesheet" href="../static/card.css">
   </html>
