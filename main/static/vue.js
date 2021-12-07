@@ -52,7 +52,7 @@ var app = new Vue({
         lightBackground: "#FCF7F4",
         lightItem: "#FFFFFF",
         lightText: "#da3c36",
-        darkBackground: "#434343",
+        darkBackground: "#434343af",
         darkBar: "#1b1b1b",
         darkItem: "#727272",
         darkText: "#FFFFFF",

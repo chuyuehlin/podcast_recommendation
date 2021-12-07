@@ -19,7 +19,7 @@
           :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: lightBackground}]">
           <p class="title" 
             :class="{ movingTitle: firstclick}"
-            :style="[darkmode ? {color: darkText} : {color: lightText}]">
+            :style="[darkmode ? {color: lightText} : {color: lightText}]">
              [[ title ]]
           </p>
           <ais-search-box ref="searchBox" autofocus
@@ -43,19 +43,21 @@
         </div>
         <ais-infinite-hits ref="infiniteHits" v-show="firstclick"
           :class="{ displayHits : firstclick }"
-          :style="[ darkmode ? {backgroundColor: darkBackground} : {backgroundColor: lightBackground}]">
+          :style="[ darkmode ? {backgroundColor: darkBar} : {backgroundColor: lightBackground}]">
           <template #default="{ items, isLastPage, refineNext }">
             <div v-for="item in items" class="row"
               @click="preview = item.episode_uri" 
               @mouseover="focus = item.episode_uri"
               @mouseleave="focus = null, preview = null"
               :id="item.episode_uri" :ref="item.episode_uri"
+              :style="[darkmode ? {filter: 'none', WebkitFilter: 'none'}
+               : {filter: 'drop-shadow(0px 0px 12px #afafaf)', WebkitFilter: 'drop-shadow(0px 0px 12px #afafaf)'}]"
               :class="{ 
                 focusEpisode : lock === false && preview === null && focus === item.episode_uri,
                 previewEpisode : lock === false && preview === item.episode_uri,
                 fadeEpisode : lock === false && preview === null && focus === null && fade === item.episode_uri
               }">
-              <div class="front" :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: lightItem}]">
+              <div class="front" :style="[darkmode ? {backgroundColor: darkBackground} : {backgroundColor: lightItem}]">
                 <div class="img">
                   <img class="poster" :src="item.poster" :ref="item.episode_uri+'poster'"
                   :class="{
@@ -118,7 +120,7 @@
                       fadeEpisodeName: lock === false && preview === null && focus === null && fade === item.episode_uri
                     }">
                     <ais-highlight attribute="episode_name" :hit="item" 
-                      :style="[darkmode ? {color: darkText} : {color: lightText}]"
+                      :style="[darkmode ? {color: lightBackground} : {color: lightText}]"
                       :class="{darkmodeEpisode: darkmode}" 
                     /> [[ item.episode_name ]]
                   </p>
@@ -130,22 +132,24 @@
                     :style="[darkmode ? {color: darkText} : {color: black}]"
                   /> [[ item.episode_description ]]
                 </div>
-                <div class="summary" :ref="item.episode_uri+'summary'"
+                <div class="summary-block"
                   :class="{ previewSummary : lock === false && preview === item.episode_uri }"
-                  :style="[darkmode ? {backgroundColor: darkBackground} : {backgroundColor: '#f2f2f2'}]">
-                  <p class="summary-tag"
-                    :style="[darkmode ? {color: darkText} : {color: '#293844'}]"
-                  >summarization by NLP model</p>
-                  <ais-highlight attribute="summary" :hit="item" 
-                    :class="{darkmodeSummary: darkmode}" 
-                    :style="[darkmode ? {color: darkText} : {color: black}]"
-                  /> [[ item.summary ]]
+                  :style="[darkmode ? {backgroundColor: darkBar} : {backgroundColor: '#f2f2f2'}]">
+                  <div class="summary" :ref="item.episode_uri+'summary'">
+                    <p class="summary-tag"
+                      :style="[darkmode ? {color: darkText} : {color: '#293844'}]"
+                    >summarized by BART</p>
+                    <ais-highlight attribute="summary" :hit="item" 
+                      :class="{darkmodeSummary: darkmode}" 
+                      :style="[darkmode ? {color: darkText} : {color: black}]"
+                    /> [[ item.summary ]]
+                  </div>
                 </div>
               </div>
               <form class="link" v-if="preview === item.episode_uri"
                 :action="'http://localhost:5000/episode/'+item.episode_uri">
                 <button class="btnText" type="submit" value="Go to Google"
-                  :style="[darkmode ? {backgroundColor: darkItem} : {backgroundColor: lightText}]"
+                  :style="[darkmode ? {backgroundColor: lightText} : {backgroundColor: lightText}]"
                 >Play Full Episode</button>
               </form>
             </div>
