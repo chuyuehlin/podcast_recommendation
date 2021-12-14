@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- InstantSearch CDN -->
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/templates/basic_search.css" />
@@ -38,7 +39,7 @@
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=1" rel="stylesheet">
+    <link href="/static/demo3player.css?v=11" rel="stylesheet">
 
 
 </head>
@@ -49,11 +50,11 @@
         <div class="row">
             <div class="col">
                 <p
-                    style="position: absolute; width: 492px; height: 93px; left: 0px; top: 0px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #293844;">
+                    style="position: absolute; width: 492px; height: 93px; left: -100px; top: 0px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #da3c36;">
                     <b>PRSystem</b>
                 </p>
                 <!-- 這裡是幻燈片的部分，空白的地方模糊還沒有用好 -->
-                <div class="slideshow" style=" position: relative; overflow: hidden;">
+                <div class="slideshow" style="position: relative;  overflow: hidden; border-radius: 15px;left: 50px;">
                     <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image1" data-bgcolor="#317a5c">
 
 
@@ -98,11 +99,11 @@
 
                     <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image16" data-bgcolor="#000000">
 
-
+                    <div class="background-image"></div>
                 </div>
 
 
-                <div class="row">
+                <div class="rowplay">
                     <!-- 這是慢轉5秒鍵，但還沒弄好 -->
                     <!-- <div class="col-md-2" style="z-index: 3;">
                         <button class="pbtn lg neu buttons"><i class="fas fa-fast-backward"></i></button>
@@ -125,14 +126,14 @@
                     </div> -->
                 </div>
                 <!-- 這裡是可拉episode長短的地方 -->
-                <div class="row">
-                    <div class="col-md-2" style="margin-left:310px ; margin-top: 50px; z-index: 3; width: 500px; ">
+                <div class="rowtrack" style="position: relative ; top:145px;left:80px;">
+                    <div class="col-md-2" style=" width: 100%; " >
                         <div class="track neu" id="outside">
 
-                            <div id="inside" style="bottom: 1000px ; ">
-                                <input type="range" style="--min: 0;
+                            <div id="inside" >
+                                <input type="range" id="pgbar" style="--min: 0;
 						            --max: 100;
-						            --val: 0" />
+						            --val: 0"  value="0"/>
                             </div>
 
                         </div>
@@ -150,8 +151,8 @@
                 </div>
 
                 <!-- Keywords推薦 -->
-                <div class="row" style="height:15%;margin:2px;" id="kw-vue">
-                    <div class="col-md-12" style="top: 50px;">
+                <div class="rowkey" style="height:5%;margin:2px;" id="kw-vue">
+                    <div class="col-md-12" style=" position:relative;top: 155px;">
                         <transition-group name="list-complete" tag="p">
                             <button style="margin:5px ;" v-for="input in inputs" v-bind:key="input[0]" type="button"
                                 :class="input[3]" data-toggle="tooltip" :title="input[1]">
@@ -166,33 +167,47 @@
 
 
             </div>
-            <div class="col">
+            <!-- <div class="col" style="overflow-y: scroll;height: 1000px;margin-top:80px"> -->
+            <div class="col" style="margin-top:80px;margin-left: 30px;">
                 <!-- 右邊推薦episode卡片的地方 -->
+
                 <div class="episode-card-wrapper">
-                    <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card">
+                    <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card" style="transform: translateY(0px);!important">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][0]['poster'] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message['recommendation'][0]['episode_name'] }}</h3>
-                                <div class="info">
-                                    <span class="icon-explicit"></span>
-                                    <span class="channel"></span>
+                                <h3 class="title">{{ message['episode_name'] }}</h3>
+                                <div class="info">{{ message['show_name'] }}
+                                
+                                    <!-- <span class="icon-explicit"></span>
+                                    <span class="channel"></span> -->
+                                </div>
+                                <div class="card-content">
+                                    <p class="description">{{ message["recommendation"][0]['episode_description'] }}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-content">
+                        <!-- <div class="card-content">
                             <p class="description">{{ message['recommendation'][0]['episode_description'] }}</p>
-                        </div>
+                        </div> -->
                         <!-- <div class="card-footer">
                             <span class="date">2021-03-16</span>
                             <span class="duration">35 mins</span>
                         </div> -->
-
                     </a>
 
+
                 </div>
+
+
+                <div>
+                    <p style="font-size:larger ;font-weight: bold;">
+                        Recommend Podcast
+                    </p>
+                </div>
+                
 
                 <div class="episode-card-wrapper">
                     <a href="/episode/{{ message['recommendation'][1]['episode_uri'] }}" class="episode-card">
@@ -201,16 +216,19 @@
                                 <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][1]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message["recommendation"][1]['episode_name'] }}</h3>
-                                <div class="info">
+                                <h3 class="title">{{ message["recommendation"][1]['episode_name'] }}</h3><br>
+                                <div class="card-content">
+                                    <p class="description">{{ message["recommendation"][1]['episode_description'] }}</p>
+                                </div>
+                                <!-- <div class="info">
                                     <span class="icon-explicit"></span>
                                     <span class="channel"></span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
-                        <div class="card-content">
+                        <!-- <div class="card-content">
                             <p class="description">{{ message["recommendation"][1]['episode_description'] }}</p>
-                        </div>
+                        </div> -->
                         <!-- <div class="card-footer">
                             <span class="date">2021-03-16</span>
                             <span class="duration">35 mins</span>
@@ -227,16 +245,19 @@
                                 <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][2]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message["recommendation"][2]['episode_name'] }}</h3>
-                                <div class="info">
+                                <h3 class="title">{{ message["recommendation"][2]['episode_name'] }}</h3><br>
+                                <div class="card-content">
+                                    <p class="description">{{ message["recommendation"][2]['episode_description'] }}</p>
+                                </div>
+                                <!-- <div class="info">
                                     <span class="icon-explicit"></span>
                                     <span class="channel"></span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
-                        <div class="card-content">
+                        <!-- <div class="card-content">
                             <p class="description">{{ message["recommendation"][2]['episode_description'] }}</p>
-                        </div>
+                        </div> -->
                         <!-- <div class="card-footer">
                             <span class="date">2021-03-16</span>
                             <span class="duration">35 mins</span>
@@ -253,16 +274,19 @@
                                 <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][3]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message["recommendation"][3]['episode_name'] }}</h3>
-                                <div class="info">
+                                <h3 class="title">{{ message["recommendation"][3]['episode_name'] }}</h3><br>
+                                <div class="card-content">
+                                    <p class="description">{{ message["recommendation"][3]['episode_description'] }}</p>
+                                </div>
+                                <!-- <div class="info">
                                     <span class="icon-explicit"></span>
                                     <span class="channel"></span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
-                        <div class="card-content">
+                        <!-- <div class="card-content">
                             <p class="description">{{ message["recommendation"][3]['episode_description'] }}</p>
-                        </div>
+                        </div> -->
                         <!-- <div class="card-footer">
                             <span class="date">2021-03-16</span>
                             <span class="duration">35 mins</span>
@@ -272,7 +296,7 @@
 
                 </div>
 
-                <div class="episode-card-wrapper">
+                <!-- <div class="episode-card-wrapper">
                     <a href="/episode/{{ message['recommendation'][4]['episode_uri'] }}" class="episode-card">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
@@ -289,22 +313,11 @@
                         <div class="card-content">
                             <p class="description">{{ message["recommendation"][4]['episode_description'] }}</p>
                         </div>
-                        <!-- <div class="card-footer">
-                            <span class="date">2021-03-16</span>
-                            <span class="duration">35 mins</span>
-                        </div> -->
+                      
 
                     </a>
 
-                </div>
-
-                
-
-                
-
-
-                
-
+                </div> -->
 
 
             </div>
@@ -319,6 +332,6 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-<script src="/static/demo3player.js?v=73"></script>
+<script src="/static/demo3player.js?v=2"></script>
 
 </html>
