@@ -63,7 +63,7 @@ def episode(episodeID):
 
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
-	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"],"captions":captions["captions"]}
+	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"]},"captions":captions["captions"]}
 	return render_template('demo3player.html', message=message)
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')
