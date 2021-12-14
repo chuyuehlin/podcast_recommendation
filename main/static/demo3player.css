@@ -10,9 +10,15 @@ html, body {
 .row{
   display: flex;
   flex-wrap: wrap;
+  /* width: 100%; */
 
   
 }
+
+.rowtrack{
+}
+
+
 .col{
   flex-grow: 1;
   /* Try to resize window < 600px */
@@ -25,17 +31,18 @@ html, body {
   text-align:center;
   width: 100%;
   height: 100%;
+  
 }
 
 .container{ 
-    overflow: hidden;
+    /* overflow: hidden;
     position: relative;
     box-sizing: border-box;
     background-color: #FCF7F4 ;
     height: 100%;
     width: 100%;
     top: 10%;
-    margin-left:-250px;
+    margin-left:-250px; */
     /*    transition: all 0.5s ease-in-out;
     animation: marquee 10s linear infinite;*/
     
@@ -69,7 +76,8 @@ html, body {
 } */
 
 img {
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
+  border-radius: 0;
   max-width: 100%;
   /* max-width: 100px; */
   display: block;
@@ -130,7 +138,9 @@ img {
   color:#FFF !important;
   border-color: #2F3E48 !important; */
   /* width:100px; */
-  height:50px;
+  height:30px;
+  background-color: #da3c36 !important;
+  border-color: #da3c36 !important;
   
 }
 
@@ -151,7 +161,10 @@ img {
   /* color: #7e8a98; */
   outline: none;
   cursor: pointer;
+
   position: fixed;
+  /* position: relative;
+  flex: 0 0 50%; */
 }
 .btn.lg {
   font-size: 1em;
@@ -323,15 +336,32 @@ img {
 
 
 
+  .background-image{
+    background-size: cover;
+    background-position: center center;
+    background-image: url('https://dummyimage.com/320x240/fff/fff.jpg&text=1');
+    filter: blur(10px);
+    width: 100%;
+    height: 600px;
+    z-index: 2;
+    position: absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    /* border-radius: 5px; */
+  }
+
+
 .slideshow {
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://dummyimage.com/320x240/fff/fff.jpg&text=1') center no-repeat;
   background-size: auto, cover;
   /* filter: blur(5px); */
   width: 100%;
-  height: 600px;
-  position: absolute;
+  height: 500px;
+  /* position: absolute; */
   z-index: 1;
-
+  top:80px;
 
   /* top: 170px;
   left: 500px;
@@ -351,14 +381,14 @@ img {
 }
 .slideshow img {
   background: url('https://dummyimage.com/320x240/fff/fff.jpg&text=1') center no-repeat;
-  /* background-size: cover; */
+  /* background-size:cover; */
   background-size: contain;
   filter: none;
-  z-index: 2;
+  z-index: 3;
   position: relative;
   /* max-width: 400px; */
   max-width: auto;
-  height: 600px;
+  height: 500px;
   margin: 0 auto;
   box-shadow: 0px 20px 40px #000;
 
@@ -393,12 +423,20 @@ img {
   margin: 0;
   padding: 0;
   /* width: 12.5em; */
-  width: 500px;
+  width: 930px;
   /* height: 1.5em; */
   height: 3em;
   background: transparent;
   font: 1em/1 arial, sans-serif;
+  
 }
+@media screen(min-width: 700px) {
+  .outside{
+    width:50%;
+  }
+}
+
+
 [type=range], [type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
@@ -1027,6 +1065,7 @@ body {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 3px 12px 0 rgba(0, 0, 0, .1);
+  /* overflow: scroll; */
 }
 
 @media (min-width:768px) {
@@ -1105,7 +1144,8 @@ body {
   -webkit-box-orient: vertical;
   white-space: normal;
   text-overflow: ellipsis;
-  -webkit-line-clamp: 2
+  -webkit-line-clamp: 2;
+  text-align:left;
 }
 
 .episode-card .info {
@@ -1140,6 +1180,7 @@ body {
   -webkit-box-orient: vertical;
   white-space: normal;
   text-overflow: ellipsis;
+  text-align: left;
 }
 
 .episode-card .description {
@@ -1219,8 +1260,10 @@ body {
 @media (min-width:768px) {
   .episode-card-wrapper {
       flex: 0 0 50%;
-      width: 980px;
+      width: 90%;
+      /* left:100px; */
       padding: 15px;
+      margin-left:inherit;
   }
 }
 
@@ -1253,4 +1296,15 @@ body {
   /* background-color: rgba(0,0,0,.03); */
   /* border-bottom: 1px solid rgba(0,0,0,.125) !important; */
   border-bottom: 0 !important;
+}
+
+
+@media (min-width:768px) {
+  .rowplay{
+    position: relative;
+    /* flex: 0 0 50%;  */
+    width:100%;
+    top:90px; 
+    left:-200px;
+  }
 }

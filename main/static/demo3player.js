@@ -33,7 +33,7 @@ function playPause() {
         reco_summ = setInterval(updateSummary, 5000);
         // const song = document.querySelector('#song')
         // thumbnail = document.querySelector('#thumbnail');
-        $("#play-pause").removeClass('fa-play').addClass('fa-pause');
+        $("#play-pause").removeClass('fa-play-circle').addClass('fa-pause-circle');
         // thumbnail.style.transform = "scale(1.15)";
         
         song.play();
@@ -41,7 +41,7 @@ function playPause() {
     } else {
         clearInterval(reco_event)
         clearInterval(reco_summ)
-        $("#play-pause").removeClass('fa-pause').addClass('fa-play');
+        $("#play-pause").removeClass('fa-pause-circle').addClass('fa-play-circle');
         // thumbnail.style.transform = "scale(1)"
         
         song.pause();
@@ -51,9 +51,10 @@ function playPause() {
 function updateProgressValue() {
     progressBar.max = song.duration;
     progressBar.value = song.currentTime;
-    $('#inside').css("width", String(Math.floor((progressBar.value/progressBar.max)*100)) + "%");
+    // $('#inside').css("width", String(Math.floor((progressBar.value/progressBar.max)*100)) + "%");
     // inside.style.width = String(Math.floor((progressBar.value/progressBar.max)*100)) + "%";
-
+    $('#pgbar').val(Math.floor((progressBar.value/progressBar.max)*100));
+    $('#pgbar').css("--val", Math.floor((progressBar.value/progressBar.max)*100));
     document.querySelector('.currentTime').innerHTML = (formatTime(Math.floor(song.currentTime)));
     if (document.querySelector('.durationTime').innerHTML === "NaN:NaN") {
         document.querySelector('.durationTime').innerHTML = "0:00";
@@ -117,7 +118,7 @@ $(document).ready(function() {
       console.log(res);
       caption_all = res;
     });
-  setInterval(updateCaption, 50);
+  setInterval(updateCaption, 100);
   // if($("#poster").attr("src")===null){
   //  setTimeout(showmarquee1, 13000)
   // }
@@ -144,8 +145,8 @@ function updateImage() {
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
-    $.each(res.data.result.slice(0,-4), function(t, item){ //.slice(0,-4)
-            
+    $.each(res.data.result.slice(0,-4), function(t, item){
+
         var params = {
         'query': item[0],
         'limit': 1,
@@ -154,8 +155,10 @@ function updateImage() {
       };
       // tags_generator.removeIfMax()
           $.getJSON(service_url + '?callback=?', params, function(response) {
+            // tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             if(0||response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-                tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+              // console.log("OKOK")  
+              tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             }else{
             $.each(response.itemListElement, function(i, element) {
                         var name=element['result']['name']
@@ -181,6 +184,7 @@ function updateImage() {
           });
     });
     // tags_generator.removeIfMax()
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         animated: 'fade',
@@ -421,8 +425,13 @@ $('.slideshow').each(function () {
 
   function showNextSlide() {
     let nextIndex = (currentIndex + 1) % slideImgsCount;
-    slideImgs.eq(currentIndex).fadeOut();
+    $(".background-image").fadeOut();
+    slideImgs.eq(currentIndex).fadeOut(600);
+    
+    $('.background-image').css("background-image", "url('"+slideImgs.eq(nextIndex).attr('src')+"')");
+    $('.background-image').fadeIn();
     slideImgs.eq(nextIndex).fadeIn();
+   
     currentIndex = nextIndex;
   }
 
