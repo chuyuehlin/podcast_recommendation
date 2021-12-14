@@ -15,10 +15,11 @@
 let image_links;
 const song = document.querySelector('#song');
 const progressBar = document.querySelector('#outside'); // element where progress bar appears    
+// progressBar.value is audio.currentTime
 const outside = document.getElementById('outside');
 const inside = document.getElementById('inside');
 let pPause = document.querySelector('#play-pause'); // element where play and pause image appears
-
+let caption_all;
 let playing = true;
 let reco_event;
 let reco_summ;
@@ -70,6 +71,15 @@ function formatTime(seconds) {
     return `${min}:${sec}`;
 };
 
+function updateCaption() {
+  let time = (Math.round(song.currentTime*10)/10).toFixed(3);
+  document.getElementById("currenttime").innerHTML = time;
+
+  if(caption_all.data[time] != null){
+    document.getElementById("caption").innerHTML = caption_all.data[time];
+  }
+}
+
 function updateSummary() {
   //     axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
   // .then((res) => {
@@ -86,23 +96,31 @@ $(document).ready(function() {
   // place this within dom ready function
   function showmarquee1() {     
   	$('.marquee1').css('visibility', 'visible');
-
- }
-         $(function () {
-  $('[data-toggle="tooltip"]').tooltip({
-    animated: 'fade',
-    placement: 'top',
-    html: true
-    })
-})
- progressBar.value = 0
- // use setTimeout() to execute
- setTimeout(showmarquee1, 19000)
- setInterval(updateProgressValue, 500);
- updateImage()
- // if($("#poster").attr("src")===null){
- //  setTimeout(showmarquee1, 13000)
- // }
+  }
+  
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip({
+      animated: 'fade',
+      placement: 'top',
+      html: true
+    });
+  })
+ 
+  progressBar.value = 0;
+  // use setTimeout() to execute
+  setTimeout(showmarquee1, 19000);
+  setInterval(updateProgressValue, 500);
+  updateImage();
+  // caption_all = JSON.parse(document.getElementById("caption_all").innerHTML);
+  axios.get('http://localhost:5000/episode/'+window.location.pathname.split("/")[2]+'/'+"caption")
+    .then((res) => {
+      console.log(res);
+      caption_all = res;
+    });
+  setInterval(updateCaption, 50);
+  // if($("#poster").attr("src")===null){
+  //  setTimeout(showmarquee1, 13000)
+  // }
 });
 
     outside.addEventListener('click', function(e) {
@@ -316,16 +334,16 @@ var tags_generator = new Vue({
     return {
       inputs: [],
       exist_key: [],
-      age: [],
+      age: []
     }
   },
   methods: {
     addInput(e) {
-    if(!(this.exist_key.includes(e[0]))){
-      this.age.push(1)
-      this.inputs.push(e)
-      this.exist_key.push(e[0])
-    }
+      if(!(this.exist_key.includes(e[0]))){
+        this.age.push(1)
+        this.inputs.push(e)
+        this.exist_key.push(e[0])
+      }
     },
     removeTags(){
 
@@ -337,7 +355,7 @@ var tags_generator = new Vue({
         this.age.forEach(function(item, index, array){
           array[index] = item + 1;
         });
-    }
+    },
     // removeIfMax(){
     //     while(this.exist_key.join('').length>85){
     //         this.removeTags()

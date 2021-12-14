@@ -47,6 +47,27 @@ database_url_captions="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bon
 def home():
 	return render_template('index_copy_V3.html')
 
+@app.route('/episode/<string:episodeID>/caption')
+def episode_caption(episodeID):
+	try:
+		outcome = episodes_cache[episodeID]
+	except:
+		outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
+		outcome = outcome.json()
+		outcome = outcome["_source"]
+		episodes_cache.update({episodeID:outcome})
+
+	captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
+	captions = captions.json()
+	captions = captions["_source"]
+	captions = captions["captions"]
+
+	tmp = dict()
+	for i in captions:
+		tmp.update({i[0]:i[1]})
+	print(tmp)
+	return tmp
+
 @app.route('/episode/<string:episodeID>')
 def episode(episodeID):
 	try:
@@ -63,7 +84,15 @@ def episode(episodeID):
 
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
-	message={"poster":outcome["poster"],"episode_audio":outcome["episode_audio"],"episode_name":outcome["episode_name"],"publisher":outcome["publisher"],"episode_description":outcome["episode_description"],"recommendation":outcome["recommendation"]},"captions":captions["captions"]}
+		
+	message = { "poster":outcome["poster"],
+				"episode_audio":outcome["episode_audio"],
+				"episode_name":outcome["episode_name"],
+				"publisher":outcome["publisher"],
+				"episode_description":outcome["episode_description"],
+				"recommendation":outcome["recommendation"],
+				"captions":captions["captions"]
+			}
 	return render_template('demo3player.html', message=message)
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')

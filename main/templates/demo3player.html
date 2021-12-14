@@ -127,7 +127,7 @@
                 <!-- 這裡是可拉episode長短的地方 -->
                 <div class="row">
                     <div class="col-md-2" style="margin-left:310px ; margin-top: 50px; z-index: 3; width: 500px; ">
-                        <div class="track neu" id="outside">
+                        <div class="track neu" id="outside" @timeupdate="updateAudioTime()" :ref="audio">
 
                             <div id="inside" style="bottom: 1000px ; ">
                                 <input type="range" style="--min: 0;
@@ -147,6 +147,15 @@
 
 
                     </div>
+                </div>
+                
+                <!-- Captions -->
+                <div class="row">
+                    <p style="display: none;" id="caption_all">
+                        {{ message[ "captions" ] }}
+                    </p>
+                    <p id="currenttime"></p>
+                    <p id="caption"></p>
                 </div>
 
                 <!-- Keywords推薦 -->
