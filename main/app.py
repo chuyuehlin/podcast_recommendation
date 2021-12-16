@@ -47,8 +47,8 @@ database_url_captions="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bon
 def home():
 	return render_template('index_copy_V3.html')
 
-@app.route('/episode/<string:episodeID>/caption')
-def episode_caption(episodeID):
+@app.route('/episode/<string:episodeID>/caption/<int:num>')
+def episode_caption(episodeID,num):
 	try:
 		outcome = episodes_cache[episodeID]
 	except:
@@ -64,8 +64,9 @@ def episode_caption(episodeID):
 
 	tmp = dict()
 	for i in captions:
-		tmp.update({i[0]:i[1]})
-	print(tmp)
+		if(float(i[0])/60>=num and float(i[0])/60<num+1):
+			tmp.update({i[0]:i[1]})
+
 	return tmp
 
 @app.route('/episode/<string:episodeID>')

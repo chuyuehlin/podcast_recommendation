@@ -19,7 +19,7 @@ const progressBar = document.querySelector('#outside'); // element where progres
 const outside = document.getElementById('outside');
 const inside = document.getElementById('inside');
 let pPause = document.querySelector('#play-pause'); // element where play and pause image appears
-let caption_all;
+let caption_all = {};
 let playing = true;
 let reco_event;
 let reco_summ;
@@ -74,11 +74,20 @@ function formatTime(seconds) {
 
 function updateCaption() {
   let time = (Math.round(song.currentTime*10)/10).toFixed(3);
+  if(time == Math.floor(time)) time = Math.floor(time);
   document.getElementById("currenttime").innerHTML = time;
 
-  if(caption_all.data[time] != null){
-    document.getElementById("caption").innerHTML = caption_all.data[time];
+  if(caption_all[time] != null){
+    document.getElementById("caption").innerHTML = caption_all[time];
   }
+}
+
+function loadCaption() {
+  console.log("load"+song.currentTime);
+  axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
+      console.log(res.data);
+      caption_all = {...caption_all, ...res.data};
+  });
 }
 
 function updateSummary() {
@@ -108,18 +117,15 @@ $(document).ready(function() {
   })
  
   progressBar.value = 0;
+  loadCaption();
+  updateCaption();
+  setInterval(loadCaption, 60000);
+  setInterval(updateCaption, 100);
   // use setTimeout() to execute
+  // if($("#poster").attr("src")===null){
   setTimeout(showmarquee1, 19000);
   setInterval(updateProgressValue, 500);
   updateImage();
-  // caption_all = JSON.parse(document.getElementById("caption_all").innerHTML);
-  axios.get('http://localhost:5000/episode/'+window.location.pathname.split("/")[2]+'/'+"caption")
-    .then((res) => {
-      console.log(res);
-      caption_all = res;
-    });
-  setInterval(updateCaption, 100);
-  // if($("#poster").attr("src")===null){
   //  setTimeout(showmarquee1, 13000)
   // }
 });

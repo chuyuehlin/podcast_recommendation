@@ -7,7 +7,8 @@ var app = new Vue({
     delimiters: ["[[", "]]"],
     data: {
         searchClient: instantMeiliSearch(
-            'http://localhost:7700',
+            //'http://localhost:7700',
+            'http://3.143.173.120/',
             ''
         ),
         title: "PodReSystem",
