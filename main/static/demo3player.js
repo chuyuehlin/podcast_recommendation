@@ -48,6 +48,7 @@ function playPause() {
         playing = true;
     }
 }
+
 function updateProgressValue() {
     progressBar.max = song.duration;
     progressBar.value = song.currentTime;
@@ -72,6 +73,14 @@ function formatTime(seconds) {
     return `${min}:${sec}`;
 };
 
+function loadCaption() {
+  console.log("load"+song.currentTime);
+  axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
+      console.log(res.data);
+      caption_all = {...caption_all, ...res.data};
+  });
+}
+
 function updateCaption() {
   let time = (Math.round(song.currentTime*10)/10).toFixed(3);
   if(time == Math.floor(time)) time = Math.floor(time);
@@ -80,14 +89,6 @@ function updateCaption() {
   if(caption_all[time] != null){
     document.getElementById("caption").innerHTML = caption_all[time];
   }
-}
-
-function loadCaption() {
-  console.log("load"+song.currentTime);
-  axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
-      console.log(res.data);
-      caption_all = {...caption_all, ...res.data};
-  });
 }
 
 function updateSummary() {
@@ -130,64 +131,60 @@ $(document).ready(function() {
   // }
 });
 
-    outside.addEventListener('click', function(e) {
+outside.addEventListener('click', function(e) {
+    var pct = e.offsetX / outside.offsetWidth;
+    progressBar.value=pct*song.duration
+    song.currentTime = progressBar.value;
+    $('#inside').css('width', e.offsetX + "px");
+    // inside.style.width = e.offsetX + "px";
+    changeProgressBar();
+    // calculate the %  
+    // inside.innerHTML = pct + " %";
+  }, false);
 
-      var pct = e.offsetX / outside.offsetWidth;
-      progressBar.value=pct*song.duration
-      song.currentTime = progressBar.value;
-      $('#inside').css('width', e.offsetX + "px");
-      // inside.style.width = e.offsetX + "px";
-      changeProgressBar()
-      // calculate the %
-      
-      // inside.innerHTML = pct + " %";
-    }, false);
 function updateImage() {
-
-    axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+progressBar.value+'/')
+  axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+progressBar.value+'/')
   .then((res) => {
     console.log(res);
     image_links=res;
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
-    $.each(res.data.result.slice(0,-4), function(t, item){
-
-        var params = {
+    $.each(image_links.data.result.slice(0,-4), function(t, item){
+      var params = {
         'query': item[0],
         'limit': 1,
         'indent': true,
         'key' : 'AIzaSyB5UtPW_MpxtKb6HwF9cxDxEUflDqX4Wyk',
       };
       // tags_generator.removeIfMax()
-          $.getJSON(service_url + '?callback=?', params, function(response) {
-            // tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-            if(0||response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-              // console.log("OKOK")  
-              tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-            }else{
-            $.each(response.itemListElement, function(i, element) {
-                        var name=element['result']['name']
-                        var des=""
-                        var url=""
-                        if(typeof element['result']['description'] === 'undefined') {
-                            des=element['result']['detailedDescription']['articleBody']
-                        }
-                        else {
-                            des=element['result']['description']
-                        }
-                        url=element['result']['url']
-                        tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-                        $(function () {
-                      $('[data-toggle="tooltip"]').tooltip({
-                        animated: 'fade',
-                        placement: 'top',
-                        html: true
-                        })
-                    })
-            });
+      $.getJSON(service_url + '?callback=?', params, function(response) {
+        // tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+        if(0 || response.itemListElement.length == 0 || ((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
+          // console.log("OKOK")  
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+        } else {
+          $.each(response.itemListElement, function(i, element) {
+            var name = element['result']['name'];
+            var des = "";
+            var url = "";
+            if(typeof element['result']['description'] === 'undefined') {
+              des = element['result']['detailedDescription']['articleBody'];
+            } else {
+              des = element['result']['description'];
             }
+            url = element['result']['url'];
+            tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip({
+                animated: 'fade',
+                placement: 'top',
+                html: true
+              });
+            });
           });
+        }
+      });
     });
     // tags_generator.removeIfMax()
 
@@ -196,8 +193,9 @@ function updateImage() {
         animated: 'fade',
         placement: 'top',
         html: true
-        })
-    })
+        });
+    });
+
     $("#image1").attr("src",res.data.result[0][1][0])
     $("#image2").attr("src",res.data.result[0][1][1])
     $("#image3").attr("src",res.data.result[0][1][2])
@@ -213,57 +211,54 @@ function updateImage() {
     $("#image13").attr("src",res.data.result[3][1][0])
     $("#image14").attr("src",res.data.result[3][1][1])
     $("#image15").attr("src",res.data.result[3][1][2])
-    $("#image16").attr("src",res.data.result[3][1][3])
-    
-});
+    $("#image16").attr("src",res.data.result[3][1][3])  
+  });
 };
 
 
 function changeProgressBar() {
-    
-    axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
+  axios.get('http://localhost:5000/recommend_image/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
   .then((res) => {
     console.log(res);
     image_links=res;
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
-    $.each(res.data.result.slice(0,-4), function(t, item){ //.slice(0,-4)
-            
-        var params = {
+    $.each(image_links.data.result.slice(0,-4), function(t, item){ //.slice(0,-4)   
+      var params = {
         'query': item[0],
         'limit': 1,
         'indent': true,
         'key' : 'AIzaSyB5UtPW_MpxtKb6HwF9cxDxEUflDqX4Wyk',
       };
       // tags_generator.removeIfMax()
-          $.getJSON(service_url + '?callback=?', params, function(response) {
-            if(response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-                tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-            }else{
-            $.each(response.itemListElement, function(i, element) {
-                        var name=element['result']['name']
-                        var des=""
-                        var url=""
-                        if(typeof element['result']['description'] === 'undefined') {
-                            des=element['result']['detailedDescription']['articleBody']
-                        }
-                        else {
-                            des=element['result']['description']
-                        }
-                        url=element['result']['url']
-                        tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-                        $(function () {
-                      $('[data-toggle="tooltip"]').tooltip({
-                        animated: 'fade',
-                        placement: 'top',
-                        html: true
-                        })
-                    })
-            });
+      $.getJSON(service_url + '?callback=?', params, function(response) {
+        if(response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+        } else {
+          $.each(response.itemListElement, function(i, element) {
+            var name=element['result']['name']
+            var des=""
+            var url=""
+            if(typeof element['result']['description'] === 'undefined') {
+              des=element['result']['detailedDescription']['articleBody']
+            } else {
+              des=element['result']['description']
             }
+            url=element['result']['url']
+            tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip({
+                animated: 'fade',
+                placement: 'top',
+                html: true
+              })
+            })
           });
+        }
+      });
     });
+    
     // tags_generator.removeTags();
     // tags_generator.removeTags();
     // tags_generator.removeTags();
@@ -273,42 +268,43 @@ function changeProgressBar() {
     // tags_generator.addInput([res.data.result[2][0],res.data.result[2][0]]);
     // tags_generator.addInput([res.data.result[3][0],res.data.result[3][0]]);
     // tags_generator.removeIfMax()
-        $(function () {
+    
+    $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         animated: 'fade',
         placement: 'top',
         html: true
-        })
-    })
-    $("#image1").attr("src",res.data.result[0][1][0])
-    $("#image2").attr("src",res.data.result[0][1][1])
-    $("#image3").attr("src",res.data.result[0][1][2])
-    $("#image4").attr("src",res.data.result[0][1][3])
-    $("#image5").attr("src",res.data.result[1][1][0])
-    $("#image6").attr("src",res.data.result[1][1][1])
-    $("#image7").attr("src",res.data.result[1][1][2])
-    $("#image8").attr("src",res.data.result[1][1][3])
-    $("#image9").attr("src",res.data.result[2][1][0])
-    $("#image10").attr("src",res.data.result[2][1][1])
-    $("#image11").attr("src",res.data.result[2][1][2])
-    $("#image12").attr("src",res.data.result[2][1][3])
-    $("#image13").attr("src",res.data.result[3][1][0])
-    $("#image14").attr("src",res.data.result[3][1][1])
-    $("#image15").attr("src",res.data.result[3][1][2])
-    $("#image16").attr("src",res.data.result[3][1][3])
+      });
+    });
 
-});
-//       axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
+    $("#image1").attr("src",image_links.data.result[0][1][0])
+    $("#image2").attr("src",image_links.data.result[0][1][1])
+    $("#image3").attr("src",image_links.data.result[0][1][2])
+    $("#image4").attr("src",image_links.data.result[0][1][3])
+    $("#image5").attr("src",image_links.data.result[1][1][0])
+    $("#image6").attr("src",image_links.data.result[1][1][1])
+    $("#image7").attr("src",image_links.data.result[1][1][2])
+    $("#image8").attr("src",image_links.data.result[1][1][3])
+    $("#image9").attr("src",image_links.data.result[2][1][0])
+    $("#image10").attr("src",image_links.data.result[2][1][1])
+    $("#image11").attr("src",image_links.data.result[2][1][2])
+    $("#image12").attr("src",image_links.data.result[2][1][3])
+    $("#image13").attr("src",image_links.data.result[3][1][0])
+    $("#image14").attr("src",image_links.data.result[3][1][1])
+    $("#image15").attr("src",image_links.data.result[3][1][2])
+    $("#image16").attr("src",image_links.data.result[3][1][3])
+  });
+//   axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
 //   .then((res) => {
 //     console.log(res);
-
 //     $("#summary").text(res.data.result);
-
 // });
 };
+
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
 // document.addEventListener("DOMContentLoaded", function(event) {
 //    document.querySelectorAll('img').forEach(function(img){
 //     var count1=getRandomInt(4);
