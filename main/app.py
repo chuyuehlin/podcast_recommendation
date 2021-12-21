@@ -119,8 +119,10 @@ def recommend_image(episodeID,time):
 	extractor.candidate_selection()
 	extractor.candidate_weighting(window=5)
 	doc = nlp(text)
-	keywords = keywords+ list(set([(ee.text.lower(),0) for ee in doc.ents if ee.label_ == 'PERSON' or ee.label_ == 'ORG' or ee.label_ == 'GPE']))
+	keywords = keywords+ list(set([(ee.text.lower(),0) for ee in doc.ents if ee.label_ in ['PERSON','ORG','GPE','EVENT','FAC','LOC','NORP','PRODUCT','WORK_OF_ART']]))
+	print([(i.text,i.label_) for i in doc.ents])
 	keywords = keywords+ extractor.get_n_best(n=4)
+	print(keywords)
 	links=[]
 	for i in keywords:
 		tmp=[]
@@ -130,7 +132,7 @@ def recommend_image(episodeID,time):
 		tmp.append(i[0])
 		# tmp.append(paths[0][i[0]])
 		tmp.append(get_all_link(query_string, limit=4,  output_dir='dataset', adult_filter_off=False, force_replace=False, timeout=60, verbose=False))  #adult可改
-		print(tmp)
+#		print(tmp)
 		links.append(tmp)
 	return {"result":links}
 

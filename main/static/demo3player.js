@@ -389,7 +389,13 @@ var tags_generator = new Vue({
         this.age.push(1)
         this.inputs.push(e)
         this.exist_key.push(e[0])
-      }
+      }else{
+	let duindex = this.exist_key.indexOf(e[0])
+	this.inputs.splice(duindex,1)
+	this.exist_key.splice(duindex,1)
+	this.age.splice(duindex,1)	
+	this.addInput(e)
+	}
     },
     removeTags(){
         this.inputs.shift()
