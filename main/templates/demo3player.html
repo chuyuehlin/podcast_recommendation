@@ -5,10 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- InstantSearch CDN -->
-    <link rel="stylesheet"
-        href="https://unpkg.com/@meilisearch/instant-meilisearch/templates/basic_search.css" />
-    <script
-        src="https://unpkg.com/@meilisearch/instant-meilisearch@0.3.2/dist/instant-meilisearch.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@meilisearch/instant-meilisearch/templates/basic_search.css" />
+    <script src="https://unpkg.com/@meilisearch/instant-meilisearch@0.3.2/dist/instant-meilisearch.umd.min.js"></script>
     <!-- Jquery CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Bootstrap CDN -->
@@ -38,7 +36,7 @@
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=11" rel="stylesheet">
+    <link href="/static/demo3player.css?v=1" rel="stylesheet">
 
 
 </head>
@@ -48,8 +46,9 @@
     <div class="container-fluid" style="background-color: #FCF7F4 ; height: 100%;">
         <div class="row">
             <div class="col">
-                <p style="position: absolute; width: 492px; height: 93px; left: -100px; top: 0px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #da3c36;">
-                    <b>PRSystem</b>
+                <p
+                    style="position: absolute; width: 492px; height: 93px; left: -100px; top: 0px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #da3c36;">
+                    <a href="http://localhost:5000/"><b>PRSystem</b></a>
                 </p>
                 <!-- 這裡是幻燈片的部分，空白的地方模糊還沒有用好 -->
                 <div class="slideshow" style="position: relative;  overflow: hidden; border-radius: 15px;left: 50px;">
@@ -71,12 +70,51 @@
                     <img src="https://dummyimage.com/320x240/fff/fff.jpg&text=1" id="image16" data-bgcolor="#000000">
                     <div class="background-image"></div>
                 </div>
+                <!-- Captions -->
+                <div class="row"
+                    style="position:relative;background-color: 	rgb(241, 230, 223);color: black;height: 100px;width: 100%;margin-left: 45px;margin-top: 90px;;border-radius: 10px;z-index: 1;
+                    @media (min-width:768px) {
+                        .row {
+                            position: relative;
+                            width: 450px;
+                            
+                        }
+                    }">
+                    <p style="display: none;" id="caption_all">
+                        {{ message[ "captions" ] }}
+                    </p>
+                    <p id="currentKeyword"></p>
+                    <p id="caption"></p>
+                </div>
+                <!-- Keywords推薦 -->
+                <div class="rowkey" style="height: 80px;margin:2px;" id="kw-vue">
+                    <div class="col-md-12" style=" position:relative ;top: 30px;">
+                        <transition-group name="list-complete" tag="p">
+                            <button style="margin:5px ;" v-for="input in inputs" v-bind:key="input[0]" type="button"
+                                :class="input[3]" data-toggle="tooltip" :title="input[1]">
+                                <a target="_blank" rel="noopener noreferrer" :href="input[2]" style="font-size:15px;color:white">%%%
+                                    input[0] %%%</a>
+                            </button>
+                        </transition-group>
+                    </div>
+                </div>
 
+
+                <div class="rowplayer" style="position:absolute;background-color: 	#D0D0D0 transparent;width: 45%;height: 170px;margin-top:100px ;margin-left: 55px;
+                  @media (min-width:768px) {
+                        .rowplayer {
+                            position: relative;
+                            width: 150px;
+                            
+                        }
+                    }
+                ">
+                </div>
                 <div class="rowplay">
                     <!-- 這是慢轉5秒鍵，但還沒弄好 -->
                     <!-- <div class="col-md-2" style="z-index: 3;">
-                        <button class="pbtn lg neu buttons"><i class="fas fa-fast-backward"></i></button>
-                    </div> -->
+                            <button class="pbtn lg neu buttons"><i class="fas fa-fast-backward"></i></button>
+                        </div> -->
                     <!-- 播放暫停鍵 -->
                     <div class="col-md-2" style="z-index: 3;">
                         <!-- class="pbtn lg neu buttons"  -->
@@ -87,18 +125,26 @@
                     </div>
                     <!-- 這是快轉5秒鍵，但還沒弄好 -->
                     <!-- <div class="col-md-2" style="z-index: 3;">
-                        <button class="pbtn lg neu buttons"><i class="fas fa-fast-forward"></i></button>
-
-                    </div> -->
+                            <button class="pbtn lg neu buttons"><i class="fas fa-fast-forward"></i></button>
+    
+                        </div> -->
                 </div>
                 <!-- 這裡是可拉episode長短的地方 -->
-                <div class="rowtrack" style="position: relative ; top:145px;left:80px;">
-                    <div class="col-md-2" style=" width: 100%; " >
+                <div class="rowtrack" style="position: relative ; top:70px;left:160px; width: 80%;
+                    /* @media (min-width:768px) {
+                        .rowtrack {
+                            position: relative;
+                            width: 450px;
+                            
+                        }
+                    } */
+                ">
+                    <div class="col-md-2" style=" width: 100%; ">
                         <div class="track neu" id="outside">
-                            <div id="inside" >
-                                <input type="range" id="pgbar" style="--min: 0;
-						            --max: 100;
-						            --val: 0"  value="0"/>
+                            <div id="inside">
+                                <input type="range" id="pgbar" style="width:100% ;--min: 0;
+                                        --max: 100;
+                                        --val: 0" value="0" />
                             </div>
                         </div>
                         <div class="row" style="margin:2px">
@@ -111,43 +157,28 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Captions -->
-                <div class="row">
-                    <p style="display: none;" id="caption_all">
-                        {{ message[ "captions" ] }}
-                    </p>
-                    <!-- <p id="currenttime"></p> -->
-                    <p id="currentKeyword"></p>
-                    <p id="caption"></p>
-                </div>
 
-                <!-- Keywords推薦 -->
-                <div class="rowkey" style="height:5%;margin:2px;" id="kw-vue">
-                    <div class="col-md-12" style=" position:relative;top: 155px;">
-                        <transition-group name="list-complete" tag="p">
-                            <button style="margin:5px ;" v-for="input in inputs" v-bind:key="input[0]" type="button"
-                                :class="input[3]" data-toggle="tooltip" :title="input[1]">
-                                <a target="_blank" rel="noopener noreferrer" :href="input[2]" style="color:white">%%%
-                                    input[0] %%%</a>
-                            </button>
-                        </transition-group>
-                    </div>
-                </div>
+
+
+
+
+
             </div>
 
             <!-- <div class="col" style="overflow-y: scroll;height: 1000px;margin-top:80px"> -->
             <div class="col" style="margin-top:80px;margin-left: 30px;">
                 <!-- 右邊推薦episode卡片的地方 -->
                 <div class="episode-card-wrapper">
-                    <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card" style="transform: translateY(0px)!important;">
+                    <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card"
+                        style="transform: translateY(0px)!important;">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['poster'] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy"
+                                    src="{{ message['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message['episode_name'] }}</h3>
-                                <div class="info">{{ message['show_name'] }}                    
+                                <div class="info">{{ message['show_name'] }}
                                     <!-- <span class="icon-explicit"></span>
                                     <span class="channel"></span> -->
                                 </div>
@@ -167,16 +198,17 @@
                 </div>
 
                 <div>
-                    <p style="font-size:larger ;font-weight: bold;">
+                    <p style="font-size:25px ;font-weight: bold;">
                         Recommend Podcast
                     </p>
                 </div>
-                
+
                 <div class="episode-card-wrapper">
                     <a href="/episode/{{ message['recommendation'][1]['episode_uri'] }}" class="episode-card">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][1]['poster'] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy"
+                                    src="{{ message['recommendation'][1]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message["recommendation"][1]['episode_name'] }}</h3><br>
@@ -203,7 +235,8 @@
                     <a href="/episode/{{ message['recommendation'][2]['episode_uri'] }}" class="episode-card">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][2]['poster'] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy"
+                                    src="{{ message['recommendation'][2]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message["recommendation"][2]['episode_name'] }}</h3><br>
@@ -230,7 +263,8 @@
                     <a href="/episode/{{ message['recommendation'][3]['episode_uri'] }}" class="episode-card">
                         <div class="card-header">
                             <div class="cover-image-wrapper">
-                                <img class="cover-image" width="150px" height="150px" loading="lazy" src="{{ message['recommendation'][3]['poster'] }}">
+                                <img class="cover-image" width="150px" height="150px" loading="lazy"
+                                    src="{{ message['recommendation'][3]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message["recommendation"][3]['episode_name'] }}</h3><br>
