@@ -5,6 +5,7 @@ html, body {
   overflow: hidden;
   font-family: "Roboto", sans-serif;
   background-color: #FCF7F4;
+  /* background-color: #fffaef; */
   background-color: transparent;
 }
 .row{
@@ -25,6 +26,7 @@ html, body {
   min-width:200px;
   /* Below is not important */
   background-color:#FCF7F4 ;
+  /* background-color: #fffaef; */
   /* color:#FCF7F4; */
   margin:15px;
   min-height:50vh;
@@ -155,8 +157,8 @@ img {
 .pbtn {
   padding: 15px;
   /* margin-top: -50px; */
-  margin-top: 30px;
-  margin-left: 200px;
+  margin-top: -40px;
+  margin-left: 260px;
   border-radius: 30px;
   /* color: #7e8a98; */
   outline: none;
@@ -193,7 +195,7 @@ img {
   border-radius: 15px;
 } */
 .currentTime{
-  margin-right: 100%;
+  margin-right: 90%;
 }
 .durationTime {
   margin-left: 90%;
@@ -448,7 +450,7 @@ img {
   background: #ccc;
 }
 .js [type=range]::-webkit-slider-runnable-track {
-  background: linear-gradient(#95a, #95a) 0/var(--sx) 100% no-repeat #ccc;
+  background: linear-gradient(#da3c36, #da3c36) 0/var(--sx) 100% no-repeat #ccc;
 }
 [type=range]::-moz-range-track {
   box-sizing: border-box;
@@ -466,11 +468,11 @@ img {
 }
 [type=range]::-moz-range-progress {
   height: 0.25em;
-  background: #95a;
+  background: #da3c36;
 }
 [type=range]::-ms-fill-lower {
   height: 0.25em;
-  background: #95a;
+  background: #da3c36;
 }
 [type=range]::-webkit-slider-thumb {
   margin-top: -0.625em;
@@ -1133,7 +1135,7 @@ body {
 }
 
 .episode-card .title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 24px;
   margin: 0;
@@ -1185,7 +1187,7 @@ body {
 
 .episode-card .description {
   left: 0px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 20px;
   min-height: 60px;
   word-break: break-word;

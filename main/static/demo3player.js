@@ -146,7 +146,7 @@ outside.addEventListener('click', function(e) {
     var pct = e.offsetX / outside.offsetWidth;
     progressBar.value=pct*song.duration
     song.currentTime = progressBar.value;
-    $('#inside').css('width', e.offsetX + "px");
+    // $('#inside').css('width', e.offsetX + "px");
     // inside.style.width = e.offsetX + "px";
     changeProgressBar();
     // calculate the %  
