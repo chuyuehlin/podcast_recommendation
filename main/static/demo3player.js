@@ -20,17 +20,21 @@ const outside = document.getElementById('outside');
 const inside = document.getElementById('inside');
 let pPause = document.querySelector('#play-pause'); // element where play and pause image appears
 let caption_all = {};
+let currentImageKeyword;
 let playing = true;
 let reco_event;
 let reco_summ;
+let reco_loadCap, reco_updateCap;
 var service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 
 function playPause() {
     if (playing) {
-        updateImage()
-        updateSummary()
+        updateImage();
+        updateSummary();
         reco_event = setInterval(updateImage, 15000);
         reco_summ = setInterval(updateSummary, 5000);
+        reco_loadCap = setInterval(function(){loadCaption("next")}, 50000);
+        reco_updateCap = setInterval(updateCaption, 100);
         // const song = document.querySelector('#song')
         // thumbnail = document.querySelector('#thumbnail');
         $("#play-pause").removeClass('fa-play-circle').addClass('fa-pause-circle');
@@ -41,6 +45,8 @@ function playPause() {
     } else {
         clearInterval(reco_event)
         clearInterval(reco_summ)
+        clearInterval(reco_loadCap)
+        clearInterval(reco_updateCap)
         $("#play-pause").removeClass('fa-pause-circle').addClass('fa-play-circle');
         // thumbnail.style.transform = "scale(1)"
         
@@ -73,22 +79,29 @@ function formatTime(seconds) {
     return `${min}:${sec}`;
 };
 
-function loadCaption() {
-  console.log("load"+song.currentTime);
-  axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
-      console.log(res.data);
-      caption_all = {...caption_all, ...res.data};
-  });
+function loadCaption(time) {
+  console.log(time + " load " + song.currentTime);
+  
+  if(time == "next"){
+    axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.round(song.currentTime/60)).then((res) => {
+        console.log(res.data);
+        caption_all = {...caption_all, ...res.data};
+    });
+  } else if (time == "now") {
+    axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
+        console.log(res.data);
+        caption_all = {...caption_all, ...res.data};
+    });
+  }
 }
 
 function updateCaption() {
   let time = (Math.round(song.currentTime*10)/10).toFixed(3);
   if(time == Math.floor(time)) time = Math.floor(time);
-  document.getElementById("currenttime").innerHTML = time;
+  // document.getElementById("currenttime").innerHTML = time;
 
-  if(caption_all[time] != null){
+  if(caption_all[time] != null)
     document.getElementById("caption").innerHTML = caption_all[time];
-  }
 }
 
 function updateSummary() {
@@ -118,15 +131,13 @@ $(document).ready(function() {
   })
  
   progressBar.value = 0;
-  loadCaption();
-  updateCaption();
-  setInterval(loadCaption, 60000);
-  setInterval(updateCaption, 100);
   // use setTimeout() to execute
   // if($("#poster").attr("src")===null){
   setTimeout(showmarquee1, 19000);
   setInterval(updateProgressValue, 500);
   updateImage();
+  loadCaption("now");
+  updateCaption();
   //  setTimeout(showmarquee1, 13000)
   // }
 });
@@ -196,22 +207,22 @@ function updateImage() {
         });
     });
 
-    $("#image1").attr("src",res.data.result[0][1][0])
-    $("#image2").attr("src",res.data.result[0][1][1])
-    $("#image3").attr("src",res.data.result[0][1][2])
-    $("#image4").attr("src",res.data.result[0][1][3])
-    $("#image5").attr("src",res.data.result[1][1][0])
-    $("#image6").attr("src",res.data.result[1][1][1])
-    $("#image7").attr("src",res.data.result[1][1][2])
-    $("#image8").attr("src",res.data.result[1][1][3])
-    $("#image9").attr("src",res.data.result[2][1][0])
-    $("#image10").attr("src",res.data.result[2][1][1])
-    $("#image11").attr("src",res.data.result[2][1][2])
-    $("#image12").attr("src",res.data.result[2][1][3])
-    $("#image13").attr("src",res.data.result[3][1][0])
-    $("#image14").attr("src",res.data.result[3][1][1])
-    $("#image15").attr("src",res.data.result[3][1][2])
-    $("#image16").attr("src",res.data.result[3][1][3])  
+    $("#image1").attr("src",image_links.data.result[0][1][0]).attr("title",image_links.data.result[0][0])
+    $("#image2").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
+    $("#image3").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
+    $("#image4").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
+    $("#image5").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image6").attr("src",image_links.data.result[1][1][1]).attr("title",image_links.data.result[1][0])
+    $("#image7").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
+    $("#image8").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
+    $("#image9").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
+    $("#image10").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image11").attr("src",image_links.data.result[2][1][2]).attr("title",image_links.data.result[2][0])
+    $("#image12").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
+    $("#image13").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
+    $("#image14").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
+    $("#image15").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
+    $("#image16").attr("src",image_links.data.result[3][1][3]).attr("title",image_links.data.result[3][0]) 
   });
 };
 
@@ -277,22 +288,22 @@ function changeProgressBar() {
       });
     });
 
-    $("#image1").attr("src",image_links.data.result[0][1][0])
-    $("#image2").attr("src",image_links.data.result[0][1][1])
-    $("#image3").attr("src",image_links.data.result[0][1][2])
-    $("#image4").attr("src",image_links.data.result[0][1][3])
-    $("#image5").attr("src",image_links.data.result[1][1][0])
-    $("#image6").attr("src",image_links.data.result[1][1][1])
-    $("#image7").attr("src",image_links.data.result[1][1][2])
-    $("#image8").attr("src",image_links.data.result[1][1][3])
-    $("#image9").attr("src",image_links.data.result[2][1][0])
-    $("#image10").attr("src",image_links.data.result[2][1][1])
-    $("#image11").attr("src",image_links.data.result[2][1][2])
-    $("#image12").attr("src",image_links.data.result[2][1][3])
-    $("#image13").attr("src",image_links.data.result[3][1][0])
-    $("#image14").attr("src",image_links.data.result[3][1][1])
-    $("#image15").attr("src",image_links.data.result[3][1][2])
-    $("#image16").attr("src",image_links.data.result[3][1][3])
+    $("#image1").attr("src",image_links.data.result[0][1][0]).attr("title",image_links.data.result[0][0])
+    $("#image2").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
+    $("#image3").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
+    $("#image4").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
+    $("#image5").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image6").attr("src",image_links.data.result[1][1][1]).attr("title",image_links.data.result[1][0])
+    $("#image7").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
+    $("#image8").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
+    $("#image9").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
+    $("#image10").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image11").attr("src",image_links.data.result[2][1][2]).attr("title",image_links.data.result[2][0])
+    $("#image12").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
+    $("#image13").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
+    $("#image14").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
+    $("#image15").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
+    $("#image16").attr("src",image_links.data.result[3][1][3]).attr("title",image_links.data.result[3][0])
   });
 //   axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
 //   .then((res) => {
@@ -352,7 +363,6 @@ var tags_generator = new Vue({
       }
     },
     removeTags(){
-
         this.inputs.shift()
         this.exist_key.shift()
         this.age.shift()
@@ -398,28 +408,28 @@ var tags_generator = new Vue({
 })
 
 function showIframe() {
-            /* Parent element */
-            var widget = document.createElement("div");
-            widget.style.position="fixed";
-            widget.style.top="100px";
-            widget.style.left="100px";
-            widget.style.width="800px";
-            widget.style.height="600px";
+  /* Parent element */
+  var widget = document.createElement("div");
+  widget.style.position="fixed";
+  widget.style.top="100px";
+  widget.style.left="100px";
+  widget.style.width="800px";
+  widget.style.height="600px";
 
-            /* picture uploading page frame */
-            var iframe = document.createElement("iframe");
-            iframe.src = "https://www.itread01.com/content/1542414730.html"; // use your picture upload URL here
+  /* picture uploading page frame */
+  var iframe = document.createElement("iframe");
+  iframe.src = "https://www.itread01.com/content/1542414730.html"; // use your picture upload URL here
 
-            /* Add to document */
-            widget.appendChild(iframe);
-            document.body.appendChild(widget);
+  /* Add to document */
+  widget.appendChild(iframe);
+  document.body.appendChild(widget);
 }
 
 $('.slideshow').each(function () {
 
-  let slideImgs = $(this).find('img'),
-    slideImgsCount = slideImgs.length,
-    currentIndex = 0;
+  let slideImgs = $(this).find('img');
+  let slideImgsCount = slideImgs.length;
+  let currentIndex = 0;
 
   slideImgs.eq(currentIndex).fadeIn();
 
@@ -431,12 +441,14 @@ $('.slideshow').each(function () {
     slideImgs.eq(currentIndex).fadeOut(600);
     
     $('.background-image').css("background-image", "url('"+slideImgs.eq(nextIndex).attr('src')+"')");
+    
+    currentImageKeyword = slideImgs.eq(nextIndex).attr("title");
+    document.getElementById("currentKeyword").innerHTML = currentImageKeyword;
+
     $('.background-image').fadeIn();
     slideImgs.eq(nextIndex).fadeIn();
-   
     currentIndex = nextIndex;
   }
-
 })
 
 
