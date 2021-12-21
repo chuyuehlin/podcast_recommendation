@@ -20,7 +20,7 @@ const outside = document.getElementById('outside');
 const inside = document.getElementById('inside');
 let pPause = document.querySelector('#play-pause'); // element where play and pause image appears
 let caption_all = {};
-let currentImageKeyword;
+let currentImageKeyword = "";
 let playing = true;
 let reco_event;
 let reco_summ;
@@ -100,8 +100,36 @@ function updateCaption() {
   if(time == Math.floor(time)) time = Math.floor(time);
   // document.getElementById("currenttime").innerHTML = time;
 
-  if(caption_all[time] != null)
-    document.getElementById("caption").innerHTML = caption_all[time];
+  if(caption_all[time] != null) {
+    // find all match keyword
+    let captionHTML = createCaptionHTML(caption_all[time]);
+    // update caption
+    document.getElementById("caption").innerHTML = captionHTML;
+  }
+}
+
+function createCaptionHTML(captionHTML) {
+  if(captionHTML == null) return null;
+
+  let lowerCaption = captionHTML.toLowerCase();
+  let pos = lowerCaption.indexOf(currentImageKeyword);
+  
+  while(pos != -1){
+    console.log("MATCH! "+currentImageKeyword);
+    let keywordLength = currentImageKeyword.length;
+    
+    captionHTML = captionHTML.slice(0, pos) 
+                + "<span style='color:#da3c36'>"
+                + captionHTML.slice(pos, pos+keywordLength) 
+                + "</span>"
+                + captionHTML.slice(pos+keywordLength);
+    
+    lowerCaption = captionHTML.toLowerCase();
+    // 35 is length of "<span>...</span>"
+    pos = lowerCaption.indexOf(currentImageKeyword, pos+35);
+  }
+
+  return captionHTML;
 }
 
 function updateSummary() {
@@ -146,9 +174,10 @@ outside.addEventListener('click', function(e) {
     var pct = e.offsetX / outside.offsetWidth;
     progressBar.value=pct*song.duration
     song.currentTime = progressBar.value;
-    $('#inside').css('width', e.offsetX + "px");
+    // $('#inside').css('width', e.offsetX + "px");
     // inside.style.width = e.offsetX + "px";
     changeProgressBar();
+    loadCaption();
     // calculate the %  
     // inside.innerHTML = pct + " %";
   }, false);
@@ -208,20 +237,20 @@ function updateImage() {
     });
 
     $("#image1").attr("src",image_links.data.result[0][1][0]).attr("title",image_links.data.result[0][0])
-    $("#image2").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
-    $("#image3").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
-    $("#image4").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
-    $("#image5").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image2").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image3").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
+    $("#image4").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
+    $("#image5").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
     $("#image6").attr("src",image_links.data.result[1][1][1]).attr("title",image_links.data.result[1][0])
-    $("#image7").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
-    $("#image8").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
-    $("#image9").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
-    $("#image10").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image7").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image8").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
+    $("#image9").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
+    $("#image10").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
     $("#image11").attr("src",image_links.data.result[2][1][2]).attr("title",image_links.data.result[2][0])
-    $("#image12").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
-    $("#image13").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
-    $("#image14").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
-    $("#image15").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
+    $("#image12").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
+    $("#image13").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
+    $("#image14").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
+    $("#image15").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
     $("#image16").attr("src",image_links.data.result[3][1][3]).attr("title",image_links.data.result[3][0]) 
   });
 };
@@ -289,21 +318,21 @@ function changeProgressBar() {
     });
 
     $("#image1").attr("src",image_links.data.result[0][1][0]).attr("title",image_links.data.result[0][0])
-    $("#image2").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
-    $("#image3").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
-    $("#image4").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
-    $("#image5").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image2").attr("src",image_links.data.result[1][1][0]).attr("title",image_links.data.result[1][0])
+    $("#image3").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
+    $("#image4").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
+    $("#image5").attr("src",image_links.data.result[0][1][1]).attr("title",image_links.data.result[0][0])
     $("#image6").attr("src",image_links.data.result[1][1][1]).attr("title",image_links.data.result[1][0])
-    $("#image7").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
-    $("#image8").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
-    $("#image9").attr("src",image_links.data.result[2][1][0]).attr("title",image_links.data.result[2][0])
-    $("#image10").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image7").attr("src",image_links.data.result[2][1][1]).attr("title",image_links.data.result[2][0])
+    $("#image8").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
+    $("#image9").attr("src",image_links.data.result[0][1][2]).attr("title",image_links.data.result[0][0])
+    $("#image10").attr("src",image_links.data.result[1][1][2]).attr("title",image_links.data.result[1][0])
     $("#image11").attr("src",image_links.data.result[2][1][2]).attr("title",image_links.data.result[2][0])
-    $("#image12").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
-    $("#image13").attr("src",image_links.data.result[3][1][0]).attr("title",image_links.data.result[3][0])
-    $("#image14").attr("src",image_links.data.result[3][1][1]).attr("title",image_links.data.result[3][0])
-    $("#image15").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
-    $("#image16").attr("src",image_links.data.result[3][1][3]).attr("title",image_links.data.result[3][0])
+    $("#image12").attr("src",image_links.data.result[3][1][2]).attr("title",image_links.data.result[3][0])
+    $("#image13").attr("src",image_links.data.result[0][1][3]).attr("title",image_links.data.result[0][0])
+    $("#image14").attr("src",image_links.data.result[1][1][3]).attr("title",image_links.data.result[1][0])
+    $("#image15").attr("src",image_links.data.result[2][1][3]).attr("title",image_links.data.result[2][0])
+    $("#image16").attr("src",image_links.data.result[3][1][3]).attr("title",image_links.data.result[3][0]) 
   });
 //   axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
 //   .then((res) => {
@@ -448,6 +477,11 @@ $('.slideshow').each(function () {
     $('.background-image').fadeIn();
     slideImgs.eq(nextIndex).fadeIn();
     currentIndex = nextIndex;
+
+    // find all match keyword in caption
+    let captionHTML = createCaptionHTML(document.getElementById("caption").innerHTML);
+    // replace caption
+    document.getElementById("caption").innerHTML = captionHTML;
   }
 })
 
