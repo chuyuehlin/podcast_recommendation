@@ -39,7 +39,7 @@ matcher = Matcher(nlp.vocab)
 matcher.add("NOUN", [patterns[0]])
 matcher.add("PROPN", [patterns[1]])
 episodes_cache=dict()
-
+caption_cache=dict()
 database_url='https://s1uunigu33:w76fgn8dce@birch-68438726.us-east-1.bonsaisearch.net/'
 database_url_captions="https://syndo6884b:dr0szlm9v7@ivy-475518791.us-east-1.bonsaisearch.net/"
 
@@ -50,17 +50,14 @@ def home():
 @app.route('/episode/<string:episodeID>/caption/<int:num>')
 def episode_caption(episodeID,num):
 	try:
-		outcome = episodes_cache[episodeID]
+		captions = caption_cache[episodeID]
 	except:
-		outcome = requests.get(database_url+'episodes/_doc/'+episodeID)
-		outcome = outcome.json()
-		outcome = outcome["_source"]
-		episodes_cache.update({episodeID:outcome})
+		captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
+		captions = captions.json()
+		captions = captions["_source"]
+		captions = captions["captions"]
+		caption_cache.update({episodeID:captions})
 
-	captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
-	captions = captions.json()
-	captions = captions["_source"]
-	captions = captions["captions"]
 
 	tmp = dict()
 	for i in captions:
@@ -79,9 +76,9 @@ def episode(episodeID):
 		outcome = outcome["_source"]
 		episodes_cache.update({episodeID:outcome})
 
-	captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
-	captions = captions.json()
-	captions = captions["_source"]
+#	captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
+#	captions = captions.json()
+#	captions = captions["_source"]
 
 	if outcome["poster"]=="null":
 		outcome["poster"]=""
@@ -92,7 +89,7 @@ def episode(episodeID):
 				"publisher":outcome["publisher"],
 				"episode_description":outcome["episode_description"],
 				"recommendation":outcome["recommendation"],
-				"captions":captions["captions"]
+#				"captions":captions["captions"]
 			}
 	return render_template('demo3player.html', message=message)
 
