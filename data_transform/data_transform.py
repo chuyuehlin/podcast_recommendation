@@ -72,12 +72,12 @@ print('done')
 ##########################
 
 # Create the elasticsearch client.
-es = Elasticsearch(['https://s1uunigu33:w76fgn8dce@birch-68438726.us-east-1.bonsaisearch.net/'], timeout=60)
+es = Elasticsearch(['https://s1uunigu33:w76fgn8dce@birch-68438726.us-east-1.bonsaisearch.net/'], timeout=180)
 
 #因為要用bulk方式insert進去，因此會先把每集資料先放進list
 insert = []
 
-with open('/Users/chuyueh/課程/專題/json/recommend.json') as recon:
+with open('/Users/chuyueh/課程/專題/json/relevant_ep(v10).json') as recon:
 	recon = json.load(recon)
 
 	with open('/Users/chuyueh/課程/專題/json/segmented_keywords.json') as seg_key:
@@ -98,6 +98,14 @@ with open('/Users/chuyueh/課程/專題/json/recommend.json') as recon:
 				#metadata 的 json file
 				with open('/Users/chuyueh/課程/專題/json/metadata_7only.json') as f:
 					f = json.load(f)
+					
+					f_dict = dict()
+					for i in f:
+						f_dict[i['episode_uri']] = i
+					
+					for k in recon:
+						recon[k] = [f_dict[i] for i in recon[k]][:5]
+					
 
 					for row in f:
 						
