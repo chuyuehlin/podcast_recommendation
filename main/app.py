@@ -28,7 +28,7 @@ root.addHandler(ch)
 
 
 app = Flask(__name__)
-model = KeyBERT(model=os.path.join(os.path.dirname(os.path.abspath(__file__)),'models','paraphrase-MiniLM-L6-v2'))
+model = KeyBERT(model=os.path.join(os.path.dirname(os.path.abspath(__file__)),'models','all-MiniLM-L6-v2'))
 nlp = spacy.load('en_core_web_trf')
 patterns = [
 	[{"DEP": "compound","OP": "*"}, {"POS": "NOUN"}],
