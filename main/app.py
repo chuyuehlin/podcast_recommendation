@@ -165,14 +165,17 @@ def recommend_image(episodeID,time):
 	keywords = keywords + model.extract_keywords(text, keyphrase_ngram_range=(1, 3), top_n=4)
 	print(keywords)
 	links=[]
-	for i in keywords:
+	for i in range(len(keywords)):
 		tmp=[]
-		print(i[0],i[1])
+		print(keywords[i][0],keywords[i][1])
 
-		query_string = i[0]
-		tmp.append(i[0])
+		query_string = keywords[i][0]
+		tmp.append(keywords[i][0])
 		# tmp.append(paths[0][i[0]])
-		tmp.append(get_all_link(query_string, limit=4,  output_dir='dataset', adult_filter_off=False, force_replace=False, timeout=60, verbose=False))  #adult可改
+		if i<4:
+			tmp.append(get_all_link(query_string, limit=4,  output_dir='dataset', adult_filter_off=False, force_replace=False, timeout=60, verbose=False))  #adult可改
+		else:
+			tmp.append(["","","",""])
 #		print(tmp)
 		links.append(tmp)
 	return {"result":links}
