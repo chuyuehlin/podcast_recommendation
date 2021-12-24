@@ -95,33 +95,74 @@ def episode(episodeID):
 
 @app.route('/recommend_image/<string:episodeID>/<string:time>/')
 def recommend_image(episodeID,time):
-	outcome=episodes_cache[episodeID]
-	interval=30  #可調整
-	start = int(float(time))-interval
-	end = int(float(time))+interval
-	if start<0:
-		start=0
-		end=interval*2
-	start_t = str(start-(start%120))
-	end_t = str(end-(end%120))
-	start_fragment = outcome["transcript"][start_t]
+#	outcome=episodes_cache[episodeID]
+#	interval=30  #可調整
+#	start = int(float(time))
+#	end = int(float(time))+interval
+#	if start<0:
+#		start=0
+#		end=interval*2
+#	start_t = str(start-(start%120))
+#	end_t = str(end-(end%120))
+#	start_fragment = outcome["transcript"][start_t]
+#	try:
+#		end_fragment = outcome["transcript"][end_t]
+#	except:
+#		end_fragment = ""
+#	start_fragment = start_fragment.split(" ")
+#	end_fragment = end_fragment.split(" ")
+#	text = start_fragment[int(len(start_fragment)*(start%120)/120):] + end_fragment[:int(len(end_fragment)*(end%120)/120)]
+#	text = " ".join(text)
 	try:
-		end_fragment = outcome["transcript"][end_t]
+	        captions = caption_cache[episodeID]
 	except:
-		end_fragment = ""
-	start_fragment = start_fragment.split(" ")
-	end_fragment = end_fragment.split(" ")
-	text = start_fragment[int(len(start_fragment)*(start%120)/120):] + end_fragment[:int(len(end_fragment)*(end%120)/120)]
-	text = " ".join(text)
+	        captions = requests.get(database_url_captions+'captions/_doc/'+episodeID)
+	        captions = captions.json()
+	        captions = captions["_source"]
+	        captions = captions["captions"]
+	        caption_cache.update({episodeID:captions})
+	interval=20 #可調整
+	time = float(time)
+	end_time = time+interval
+	text=""
+	for i in range(len(captions)-1):
+		if(float(captions[i][0])<=time and float(captions[i+1][0])>time):
+			current_position=i
+		if(float(captions[i][0])<=end_time and float(captions[i+1][0])>end_time):
+			end_position=i
+			break
+	if time>=float(captions[-1][0]): #last segment
+		text=captions[-1][1]
+	elif time<float(captions[0][0]): #first segment
+		if end_time<float(captions[0][0]):
+			text=captions[0][1]+" "+captions[1][1]
+		elif end_time>=float(captions[-1][0]):
+			for i in captions:
+				text+=i[1]
+				text+=" "
+		else:
+			for i in range(0,end_position+1):
+				text+=captions[i][1]
+				text+=" "
+				
+	else: #body segment
+		if end_time>=float(captions[-1][0]):
+			end_position=len(captions)-1
+		for i in range(current_position,end_position+1):
+			text+=captions[i][1]
+			text+=" "
+
+	print(text)
 	keywords=[]
-	extractor = pke.unsupervised.SingleRank()
-	extractor.load_document(text, language='en')
-	extractor.candidate_selection()
-	extractor.candidate_weighting(window=5)
+	#extractor = pke.unsupervised.SingleRank()
+	#extractor.load_document(text, language='en')
+	#extractor.candidate_selection()
+	#extractor.candidate_weighting(window=5)
 	doc = nlp(text)
-	keywords = keywords+ list(set([(ee.text.lower(),0) for ee in doc.ents if ee.label_ in ['PERSON','ORG','GPE','EVENT','FAC','LOC','NORP','PRODUCT','WORK_OF_ART']]))
+	keywords = keywords+ list(set([(ee.text,0) for ee in doc.ents if ee.label_ in ['PERSON','ORG','GPE','EVENT','FAC','LOC','NORP','PRODUCT','WORK_OF_ART']]))
 	print([(i.text,i.label_) for i in doc.ents])
-	keywords = keywords+ extractor.get_n_best(n=4)
+	#keywords = keywords+ extractor.get_n_best(n=4)
+	keywords = keywords + model.extract_keywords(text, keyphrase_ngram_range=(1, 3), top_n=4)
 	print(keywords)
 	links=[]
 	for i in keywords:

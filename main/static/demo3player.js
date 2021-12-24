@@ -190,6 +190,7 @@ function updateImage() {
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
+    tags_generator.addInput([image_links.data.result[image_links.data.result.length-4][0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
     $.each(image_links.data.result.slice(0,-4), function(t, item){
       var params = {
         'query': item[0],
@@ -214,7 +215,7 @@ function updateImage() {
               des = element['result']['description'];
             }
             url = element['result']['url'];
-            tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -264,6 +265,7 @@ function changeProgressBar() {
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
+    tags_generator.addInput([image_links.data.result[image_links.data.result.length-4][0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
     $.each(image_links.data.result.slice(0,-4), function(t, item){ //.slice(0,-4)   
       var params = {
         'query': item[0],
@@ -286,7 +288,7 @@ function changeProgressBar() {
               des=element['result']['description']
             }
             url=element['result']['url']
-            tags_generator.addInput([name,des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -420,7 +422,7 @@ var tags_generator = new Vue({
   },
   watch: {
     exist_key(){
-        while(this.exist_key.join('').length>175){
+        while(this.exist_key.join('').length>250){
             this.removeTags()
         }
     },
