@@ -166,7 +166,7 @@ def recommend_image(episodeID,time):
 		links.append(tmp)
 	result.append(links) #current keywords
 
-	text2=get_transcript(episodeID,time+15)
+	text2=get_transcript(episodeID,time+20)
 	keywords2=[]
 	doc2 = nlp(text2)
 	keywords2 = keywords2 + model.extract_keywords(text2, keyphrase_ngram_range=(1, 4), top_n=1)

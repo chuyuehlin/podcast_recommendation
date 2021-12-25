@@ -209,7 +209,7 @@ function updateImage() {
       tags_generator.age.splice(duindex,1)  
       }
     });
-    while(tags_generator.exist_key.join('').length+image_links.data.result[2]>255){
+    while(tags_generator.exist_key.join('').length+image_links.data.result[2]>260){
           tags_generator.removeTags()
     }    
     $.each(image_links.data.result[0].slice(0,-4), function(t, item){
@@ -326,7 +326,7 @@ function changeProgressBar() {
       tags_generator.age.splice(duindex,1)  
       }
     });
-    while(tags_generator.exist_key.join('').length+image_links.data.result[2]>255){
+    while(tags_generator.exist_key.join('').length+image_links.data.result[2]>260){
           tags_generator.removeTags()
     }    
     $.each(image_links.data.result[0].slice(0,-4), function(t, item){ //.slice(0,-4)   
@@ -498,22 +498,23 @@ var tags_generator = new Vue({
   },
   watch: {
     exist_key(){
-        while(this.exist_key.join('').length>255){
+        while(this.exist_key.join('').length>260){
             this.removeTags()
         }
     },
     age(){
         var that=this.inputs
         this.age.forEach(function(item, index, array){
-          if(item==2){
+          if(item>=2){
             //round2
             // console.log("2")
             that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style2"
-          }else if(item>=3){
-            //round3
-            // console.log("3")
-            that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style3"
           }
+          // else if(item>=3){
+          //   //round3
+          //   // console.log("3")
+          //   that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+          // }
         });
     }
   }
