@@ -93,26 +93,7 @@ def episode(episodeID):
 			}
 	return render_template('demo3player.html', message=message)
 
-@app.route('/recommend_image/<string:episodeID>/<string:time>/')
-def recommend_image(episodeID,time):
-#	outcome=episodes_cache[episodeID]
-#	interval=30  #可調整
-#	start = int(float(time))
-#	end = int(float(time))+interval
-#	if start<0:
-#		start=0
-#		end=interval*2
-#	start_t = str(start-(start%120))
-#	end_t = str(end-(end%120))
-#	start_fragment = outcome["transcript"][start_t]
-#	try:
-#		end_fragment = outcome["transcript"][end_t]
-#	except:
-#		end_fragment = ""
-#	start_fragment = start_fragment.split(" ")
-#	end_fragment = end_fragment.split(" ")
-#	text = start_fragment[int(len(start_fragment)*(start%120)/120):] + end_fragment[:int(len(end_fragment)*(end%120)/120)]
-#	text = " ".join(text)
+def get_transcript(episodeID,time):
 	try:
 	        captions = caption_cache[episodeID]
 	except:
@@ -122,7 +103,7 @@ def recommend_image(episodeID,time):
 	        captions = captions["captions"]
 	        caption_cache.update({episodeID:captions})
 	interval=20 #可調整
-	time = float(time)
+
 	end_time = time+interval
 	text=""
 	for i in range(len(captions)-1):
@@ -153,22 +134,27 @@ def recommend_image(episodeID,time):
 			text+=" "
 
 	print(text)
+	return text
+
+@app.route('/recommend_image/<string:episodeID>/<string:time>/')
+def recommend_image(episodeID,time):
+	time = float(time)
+	result=[]
+	sum_length=0
+	text=get_transcript(episodeID,time)
 	keywords=[]
-	#extractor = pke.unsupervised.SingleRank()
-	#extractor.load_document(text, language='en')
-	#extractor.candidate_selection()
-	#extractor.candidate_weighting(window=5)
 	doc = nlp(text)
 	keywords = keywords+ list(set([(ee.text,0) for ee in doc.ents if ee.label_ in ['PERSON','ORG','GPE','EVENT','FAC','LOC','NORP','PRODUCT','WORK_OF_ART']]))
 	print([(i.text,i.label_) for i in doc.ents])
-	#keywords = keywords+ extractor.get_n_best(n=4)
 	keywords = keywords + model.extract_keywords(text, keyphrase_ngram_range=(1, 3), top_n=4)
 	print(keywords)
+
 	links=[]
 	for i in range(len(keywords)):
 		tmp=[]
 		print(keywords[i][0],keywords[i][1])
-
+		if i<len(keywords)-3:
+			sum_length+=len(keywords[i][0])
 		query_string = keywords[i][0]
 		tmp.append(keywords[i][0])
 		# tmp.append(paths[0][i[0]])
@@ -178,13 +164,28 @@ def recommend_image(episodeID,time):
 			tmp.append(["","","",""])
 #		print(tmp)
 		links.append(tmp)
-	return {"result":links}
+	result.append(links) #current keywords
+
+	text2=get_transcript(episodeID,time+15)
+	keywords2=[]
+	doc2 = nlp(text2)
+	keywords2 = keywords2 + model.extract_keywords(text2, keyphrase_ngram_range=(1, 4), top_n=1)
+	keywords2 = keywords2+ list(set([(ee.text,0) for ee in doc2.ents if ee.label_ in ['PERSON','ORG','GPE','EVENT','FAC','LOC','NORP','PRODUCT','WORK_OF_ART']]))
+	deduplicate_kw=[]
+	for i in keywords2:
+		if i[0] not in [t[0] for t in keywords]:
+			sum_length+=len(i[0])
+			deduplicate_kw.append(i)
+	print(deduplicate_kw)
+	result.append(deduplicate_kw) #upcoming keywords
+	result.append(sum_length) #total length of keywords
+	return {"result":result}
 
 #launch a Tornado server with HTTPServer.
 if __name__ == "__main__":
 	port = 5000
 	http_server = HTTPServer(WSGIContainer(app))
-	logging.debug("Started Server, Kindly visit http://localhost:" + str(port))
+	logging.debug("\n\n\n!!!注意:若圖片效果異常，請修改bing downloader的header參數!!!\n\n\nStarted Server, Kindly visit http://localhost:" + str(port))
 	http_server.listen(port)
 	IOLoop.instance().start()
 	app.run(debug=True)
