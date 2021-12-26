@@ -20,19 +20,17 @@ const outside = document.getElementById('outside');
 const inside = document.getElementById('inside');
 let pPause = document.querySelector('#play-pause'); // element where play and pause image appears
 let caption_all = {};
+let currentCaptionIndex;
 let currentImageKeyword = "";
+let tags = [];
 let playing = true;
 let reco_event;
-let reco_summ;
 let reco_loadCap, reco_updateCap;
 var service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 
 function playPause() {
     if (playing) {
-        updateImage();
-        updateSummary();
         reco_event = setInterval(updateImage, 15000);
-        reco_summ = setInterval(updateSummary, 5000);
         reco_loadCap = setInterval(function(){loadCaption("next")}, 50000);
         reco_updateCap = setInterval(updateCaption, 100);
         // const song = document.querySelector('#song')
@@ -44,7 +42,6 @@ function playPause() {
         playing = false;
     } else {
         clearInterval(reco_event)
-        clearInterval(reco_summ)
         clearInterval(reco_loadCap)
         clearInterval(reco_updateCap)
         $("#play-pause").removeClass('fa-pause-circle').addClass('fa-play-circle');
@@ -80,10 +77,10 @@ function formatTime(seconds) {
 };
 
 function loadCaption(time) {
-  console.log(time + " load " + song.currentTime);
+  // console.log(time + " load " + song.currentTime);
   
   if(time == "next"){
-    axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.round(song.currentTime/60)).then((res) => {
+    axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + (Math.floor(song.currentTime/60)+1)).then((res) => {
         console.log(res.data);
         caption_all = {...caption_all, ...res.data};
     });
@@ -96,52 +93,82 @@ function loadCaption(time) {
 }
 
 function updateCaption() {
-  let time = (Math.round(song.currentTime*10)/10).toFixed(3);
-  if(time == Math.floor(time)) time = Math.floor(time);
-  // document.getElementById("currenttime").innerHTML = time;
+  // store all current tags
+  tags = getAllTags(tags);
 
-  if(caption_all[time] != null) {
-    // find all match keyword
-    let captionHTML = createCaptionHTML(caption_all[time]);
-    // update caption
-    document.getElementById("caption").innerHTML = captionHTML;
+  // check every 0.1 sec before until 0.3
+  for(let i = 0; i < 0.3; i += 0.1){
+    
+    let time = (Math.round((song.currentTime+i)*10)/10).toFixed(3);
+    if(time == Math.floor(time)) time = Math.floor(time);
+    
+    if(caption_all[time] != null) {
+      // find all match keyword
+      let captionHTML = createCaptionHTML(caption_all[time]);
+      // update caption
+      document.getElementById("caption").innerHTML = captionHTML;
+      // find caption then break
+      break;
+    }
   }
 }
 
 function createCaptionHTML(captionHTML) {
   if(captionHTML == null) return null;
 
+  // imageKeyword highlight
   let lowerCaption = captionHTML.toLowerCase();
   let pos = lowerCaption.indexOf(currentImageKeyword);
-  
-  while(pos != -1){
-    console.log("MATCH! "+currentImageKeyword);
-    let keywordLength = currentImageKeyword.length;
-    
-    captionHTML = captionHTML.slice(0, pos) 
-                + "<span style='color:#da3c36'>"
-                + captionHTML.slice(pos, pos+keywordLength) 
-                + "</span>"
-                + captionHTML.slice(pos+keywordLength);
+  let green = "#56ac2f";
+  let red = "#da3c36";
+
+  // find imageKeyword with tags
+  tags = [currentImageKeyword, ...tags];
+
+  // tag highlight
+  tags.forEach(function(item, index, array){
     
     lowerCaption = captionHTML.toLowerCase();
-    // 35 is length of "<span>...</span>"
-    pos = lowerCaption.indexOf(currentImageKeyword, pos+35);
-  }
+    pos = lowerCaption.indexOf(item);
+    
+    // green -> imageKeyword, red -> tags
+    if(index == 0) color = green;
+    else color = red;
+
+    // while find keyword and not inside another word
+    while(pos != -1 && (captionHTML[pos-1] == " " || captionHTML[pos+keywordLength+1] == " ")){
+      let keywordLength = item.length;
+      
+      captionHTML = captionHTML.slice(0, pos) 
+                  + "<span style='color:"+color+"'>"
+                  + captionHTML.slice(pos, pos+keywordLength) 
+                  + "</span>"
+                  + captionHTML.slice(pos+keywordLength);
+      
+      lowerCaption = captionHTML.toLowerCase();
+      // 35 is length of "<span>...</span>"
+      pos = lowerCaption.indexOf(item, pos+35);
+    }
+  });
+
+  // remove imageKeyword
+  tags = tags.slice(1);
 
   return captionHTML;
 }
 
-function updateSummary() {
-  //     axios.get('http://localhost:5000/recommend_summary/'+window.location.pathname.split("/")[2]+'/'+song.currentTime+'/')
-  // .then((res) => {
-  //   console.log(res);
+function getAllTags(tags) {
+  tags = [];
 
-  //   $("#summary").text(res.data.result);
+  document.querySelectorAll('[data-toggle="tooltip"]').forEach(function(item, index, array){
+    tags.push(item.innerText);
+  });
 
-// });
-};
+  return tags;
+}
 
+
+// do when load page
 $(document).ready(function() {
 	$('.marquee1').css('visibility', 'hidden');
   
@@ -177,7 +204,7 @@ outside.addEventListener('click', function(e) {
     // $('#inside').css('width', e.offsetX + "px");
     // inside.style.width = e.offsetX + "px";
     changeProgressBar();
-    loadCaption();
+    loadCaption("now");
     // calculate the %  
     // inside.innerHTML = pct + " %";
   }, false);
@@ -226,7 +253,6 @@ function updateImage() {
         }
       });
     });
-    // tags_generator.removeIfMax()
 
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
@@ -389,13 +415,13 @@ var tags_generator = new Vue({
         this.age.push(1)
         this.inputs.push(e)
         this.exist_key.push(e[0])
-      }else{
-	let duindex = this.exist_key.indexOf(e[0])
-	this.inputs.splice(duindex,1)
-	this.exist_key.splice(duindex,1)
-	this.age.splice(duindex,1)	
-	this.addInput(e)
-	}
+      } else {
+	      let duindex = this.exist_key.indexOf(e[0])
+	      this.inputs.splice(duindex,1)
+	      this.exist_key.splice(duindex,1)
+	      this.age.splice(duindex,1)	
+	      this.addInput(e)
+	    }
     },
     removeTags(){
         this.inputs.shift()
@@ -427,11 +453,11 @@ var tags_generator = new Vue({
     age(){
         var that=this.inputs
         this.age.forEach(function(item, index, array){
-          if(item==2){
+          if (item==2) {
             //round2
             // console.log("2")
             that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style2"
-          }else if(item>=3){
+          } else if (item>=3) {
             //round3
             // console.log("3")
             that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style3"

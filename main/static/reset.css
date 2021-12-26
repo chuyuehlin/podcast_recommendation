@@ -722,7 +722,7 @@ li { list-style-type: none; }
     animation-duration: 0.3s;
     animation-fill-mode: forwards;
 } @keyframes playerFocus {
-    0% { opacity: 0; }
+    0% { opacity: 0.2; }
     100% { opacity: 1; }
 }
 
@@ -732,7 +732,7 @@ li { list-style-type: none; }
     animation-fill-mode: forwards;
 } @keyframes playerFade {
     0% { opacity: 1; }
-    100% { opacity: 0; }
+    100% { opacity: 0.2; }
 }
 
 .playInPoster {
@@ -779,6 +779,7 @@ li { list-style-type: none; }
     height: 49px;
     border-radius: 32px;
     border-style: none;
+    cursor: pointer;
     background-color: #da3c36;
     color: #FFFFFF;
 }
