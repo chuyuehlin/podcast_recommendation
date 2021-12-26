@@ -713,7 +713,7 @@ li { list-style-type: none; }
 
 .previewPlayer {
     visibility: visible;
-    opacity: 0;
+    opacity: 0.2;
 }
 
 .focusPlayer {

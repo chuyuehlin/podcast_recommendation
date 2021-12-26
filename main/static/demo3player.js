@@ -22,7 +22,6 @@ let pPause = document.querySelector('#play-pause'); // element where play and pa
 let caption_all = {};
 let currentCaptionIndex;
 let currentImageKeyword = "";
-let tags = [];
 let playing = true;
 let reco_event;
 let reco_loadCap, reco_updateCap;
@@ -31,7 +30,7 @@ var service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 function playPause() {
     if (playing) {
         reco_event = setInterval(updateImage, 15000);
-        reco_loadCap = setInterval(function(){loadCaption("next")}, 50000);
+        reco_loadCap = setInterval(loadCaption("next"), 49000);
         reco_updateCap = setInterval(updateCaption, 100);
         // const song = document.querySelector('#song')
         // thumbnail = document.querySelector('#thumbnail');
@@ -92,17 +91,18 @@ function loadCaption(time) {
   }
 }
 
+let lastCaption = "";
 function updateCaption() {
-  // store all current tags
-  tags = getAllTags(tags);
-
-  // check every 0.1 sec before until 0.3
-  for(let i = 0; i < 0.3; i += 0.1){
+  // check every 0.1 sec before until 0.2
+  for(let i = 0; i < 0.2; i += 0.1){
     
     let time = (Math.round((song.currentTime+i)*10)/10).toFixed(3);
     if(time == Math.floor(time)) time = Math.floor(time);
     
     if(caption_all[time] != null) {
+      // check caption found
+      if(caption_all[time] == lastCaption) break;
+      else lastCaption = caption_all[time];
       // find all match keyword
       let captionHTML = createCaptionHTML(caption_all[time]);
       // update caption
@@ -114,59 +114,79 @@ function updateCaption() {
 }
 
 function createCaptionHTML(captionHTML) {
-  if(captionHTML == null) return null;
+  if(captionHTML == "") return "";
 
-  // imageKeyword highlight
-  let lowerCaption = captionHTML.toLowerCase();
-  let pos = lowerCaption.indexOf(currentImageKeyword);
+  // age current tags
+  // ageCurrentTags();
+
+  // get future tags
+  let tags = getFutureTags();
+
   let green = "#56ac2f";
   let red = "#da3c36";
-
-  // find imageKeyword with tags
-  tags = [currentImageKeyword, ...tags];
+  let keywords = [currentImageKeyword, ...tags];
 
   // tag highlight
-  tags.forEach(function(item, index, array){
+  keywords.forEach(function(item, index, array){
     
-    lowerCaption = captionHTML.toLowerCase();
-    pos = lowerCaption.indexOf(item);
+    let lowerCaption = captionHTML.toLowerCase();
+    let pos = lowerCaption.indexOf(item.toLowerCase());
     
-    // green -> imageKeyword, red -> tags
+    // determine color by keyword part
     if(index == 0) color = green;
     else color = red;
 
-    // while find keyword and not inside another word
-    while(pos != -1 && (captionHTML[pos-1] == " " || captionHTML[pos+keywordLength+1] == " ")){
+    // change every keyword and not colored
+    if(pos != -1 && captionHTML[pos-1] != ">"){
       let keywordLength = item.length;
-      
-      captionHTML = captionHTML.slice(0, pos) 
-                  + "<span style='color:"+color+"'>"
-                  + captionHTML.slice(pos, pos+keywordLength) 
-                  + "</span>"
-                  + captionHTML.slice(pos+keywordLength);
-      
-      lowerCaption = captionHTML.toLowerCase();
-      // 35 is length of "<span>...</span>"
-      pos = lowerCaption.indexOf(item, pos+35);
+
+      let start = captionHTML[pos-1];
+      let end = captionHTML[pos+keywordLength];
+
+      // keyword not in other word
+      if((pos == 0 || start == " ") && (end == " " || end == "." || end == ",")){
+        // make "future" tag "current"
+        ageFutureTag(item);
+
+        // color the keyword
+        captionHTML = captionHTML.slice(0, pos) 
+                    + "<span style='color:"+color+"'>"
+                    + captionHTML.slice(pos, pos+keywordLength) 
+                    + "</span>"
+                    + captionHTML.slice(pos+keywordLength);
+
+        // // find next match
+        // lowerCaption = captionHTML.toLowerCase();
+        // // 35 is length of "<span>...</span>"
+        // pos = lowerCaption.indexOf(item.toLowerCase(), pos+35);
+      }
     }
   });
-
-  // remove imageKeyword
-  tags = tags.slice(1);
 
   return captionHTML;
 }
 
-function getAllTags(tags) {
-  tags = [];
+function getFutureTags() {
+  let tags = [];
 
-  document.querySelectorAll('[data-toggle="tooltip"]').forEach(function(item, index, array){
+  document.querySelectorAll('[class="btn btn-success btn-xs kw-tag list-complete-item tag-style3"]').forEach(function(item, index, array){
     tags.push(item.innerText);
   });
 
   return tags;
 }
 
+function ageCurrentTags() {
+  document.querySelectorAll('[class="btn btn-success btn-xs kw-tag list-complete-item tag-style1"]').forEach(function(item, index, array){
+    item.className = "btn btn-success btn-xs kw-tag list-complete-item tag-style2";
+  });
+}
+
+function ageFutureTag(keyword) {
+  document.querySelectorAll('[class="btn btn-success btn-xs kw-tag list-complete-item tag-style3"]').forEach(function(item, index, array){
+    if(item.innerText == keyword) item.className = "btn btn-success btn-xs kw-tag list-complete-item tag-style1";
+  });
+}
 
 // do when load page
 $(document).ready(function() {
@@ -214,11 +234,15 @@ function updateImage() {
   .then((res) => {
     console.log(res);
     image_links=res;
-    // tags_generator.inputs=[]
-    // tags_generator.exist_key=[]
+    
     tags_generator.growup()
-    tags_generator.addInput([image_links.data.result[0][image_links.data.result[0].length-4][0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
-    check_complete=0
+    tags_generator.addInput([
+      image_links.data.result[0][image_links.data.result[0].length-4][0],
+      "",
+      undefined,
+      "btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+    ]);
+    check_complete = 0
 
     $.each(image_links.data.result[0].slice(0,-4), function(t, item){
       if(tags_generator.exist_key.includes(item[0])){
@@ -236,9 +260,11 @@ function updateImage() {
       tags_generator.age.splice(duindex,1)  
       }
     });
+
     while(tags_generator.exist_key.join('').length+image_links.data.result[2]>260){
           tags_generator.removeTags()
-    }    
+    }
+
     $.each(image_links.data.result[0].slice(0,-4), function(t, item){
 
       var params = {
@@ -249,10 +275,8 @@ function updateImage() {
       };
       // tags_generator.removeIfMax()
       $.getJSON(service_url + '?callback=?', params, function(response) {
-        // tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
         if(0 || response.itemListElement.length == 0 || ((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-          // console.log("OKOK")  
-          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
         } else {
           $.each(response.itemListElement, function(i, element) {
             var name = element['result']['name'];
@@ -268,7 +292,7 @@ function updateImage() {
               des = element['result']['description'];
             }
             url = element['result']['url'];
-            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -281,15 +305,17 @@ function updateImage() {
         }
         check_complete+=1
         if(check_complete===image_links.data.result[0].length-4){
-                  $.each(image_links.data.result[1], function(t, item){
-                    tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
-                  })
+          $.each(image_links.data.result[1], function(t, item){
+            tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+          })
         }
       });
     });
-    if(image_links.data.result[0].length-4==0){
-       $.each(image_links.data.result[1], function(t, item){          
-        tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);          })
+
+    if(image_links.data.result[0].length == 4){
+      $.each(image_links.data.result[1], function(t, item){          
+        tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+      })
     }
 
 
@@ -334,7 +360,12 @@ function changeProgressBar() {
     // tags_generator.inputs=[]
     // tags_generator.exist_key=[]
     tags_generator.growup()
-    tags_generator.addInput([image_links.data.result[0][image_links.data.result[0].length-4][0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+    tags_generator.addInput([
+      image_links.data.result[0][image_links.data.result[0].length-4][0],
+      "",
+      undefined,
+      "btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+    ]);
     check_complete=0
 
     $.each(image_links.data.result[0].slice(0,-4), function(t, item){
@@ -366,7 +397,7 @@ function changeProgressBar() {
       // tags_generator.removeIfMax()
       $.getJSON(service_url + '?callback=?', params, function(response) {
         if(response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
         } else {
           $.each(response.itemListElement, function(i, element) {
             var name=element['result']['name']
@@ -382,7 +413,7 @@ function changeProgressBar() {
               des=element['result']['description']
             }
             url=element['result']['url']
-            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -394,25 +425,17 @@ function changeProgressBar() {
         }
         check_complete+=1
         if(check_complete===image_links.data.result[0].length-4){
-                  $.each(image_links.data.result[1], function(t, item){
-                    tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
-                  })
+          $.each(image_links.data.result[1], function(t, item){
+            tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+          })
         }
       });
     });
     if(image_links.data.result[0].length-4==0){
        $.each(image_links.data.result[1], function(t, item){          
-        tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);          })
+        tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);          
+      })
     }
-    // tags_generator.removeTags();
-    // tags_generator.removeTags();
-    // tags_generator.removeTags();
-    // tags_generator.removeTags();
-    // tags_generator.addInput([res.data.result[0][0],res.data.result[0][0]]);
-    // tags_generator.addInput([res.data.result[1][0],res.data.result[1][0]]);
-    // tags_generator.addInput([res.data.result[2][0],res.data.result[2][0]]);
-    // tags_generator.addInput([res.data.result[3][0],res.data.result[3][0]]);
-    // tags_generator.removeIfMax()
     
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
@@ -490,11 +513,25 @@ var tags_generator = new Vue({
   },
   methods: {
     addInput(e) {
-      if(!(this.exist_key.includes(e[0]))){
+      // tag made of words
+      if(e[0].indexOf(" ") != -1 && e[1] == ""){
+        for(i = 0; i < e[0].split(" ").length; i++) {
+          this.addInput([
+            e[0].split(" ")[i],
+            e[1],
+            e[2],
+            e[3]
+          ]);
+        }
+      }
+      // tag not exist
+      else if(!(this.exist_key.includes(e[0]))){
         this.age.push(1)
         this.inputs.push(e)
         this.exist_key.push(e[0])
-      } else {
+      }
+      // tag exist 
+      else {
 	      let duindex = this.exist_key.indexOf(e[0])
 	      this.inputs.splice(duindex,1)
 	      this.exist_key.splice(duindex,1)
@@ -511,7 +548,7 @@ var tags_generator = new Vue({
         this.age.forEach(function(item, index, array){
           array[index] = item + 1;
         });
-    },
+    }
     // removeIfMax(){
     //     while(this.exist_key.join('').length>85){
     //         this.removeTags()
@@ -530,22 +567,21 @@ var tags_generator = new Vue({
         }
     },
     age(){
-        var that=this.inputs
-        this.age.forEach(function(item, index, array){
-          if(item>=2){
-            //round2
-            // console.log("2")
-            that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style2"
-          }
-          // else if(item>=3){
-          //   //round3
-          //   // console.log("3")
-          //   that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style3"
-          // }
-        });
+      var that=this.inputs
+      this.age.forEach(function(item, index, array){
+        if(item>=2){
+          //round2
+          // console.log("2")
+          that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style2"
+        }
+        // else if(item>=3){
+        //   //round3
+        //   // console.log("3")
+        //   that[index][3]="btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+        // }
+      });
     }
   }
-
 })
 
 function showIframe() {
