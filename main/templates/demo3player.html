@@ -36,7 +36,7 @@
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=1" rel="stylesheet">
+    <link href="/static/demo3player.css?v=14" rel="stylesheet">
 
 
 </head>
@@ -88,9 +88,9 @@
                     <p id="caption"></p>
                 </div>
                 <!-- Keywords推薦 -->
-                <div class="rowkey" style="height: 80px;margin:2px;" id="kw-vue">
-                    <div class="col-md-12" style=" position:relative ;top: 30px;">
-                        <transition-group name="list-complete" tag="p">
+                <div class="rowkey" style="height: 80px;margin:2px 2px 2px 45px;width:100%;padding: 0px 0px 0px 12px;" id="kw-vue">
+                    <div class="col-md-12" style=" position:relative ;top: 10px;">
+                        <transition-group name="list-complete" tag="p" style="text-align: left;">
                             <button style="margin:5px ;" v-for="input in inputs" v-bind:key="input[0]" type="button"
                                 :class="input[3]" data-toggle="tooltip" :title="input[1]">
                                 <a target="_blank" rel="noopener noreferrer" :href="input[2]" style="font-size:15px;color:white">%%%
@@ -317,6 +317,6 @@
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
-<script src="/static/demo3player.js?v=7"></script>
+<script src="/static/demo3player.js?v=37"></script>
 
 </html>
