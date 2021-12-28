@@ -82,11 +82,19 @@ function loadCaption(time) {
     axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + (Math.floor(song.currentTime/60)+1)).then((res) => {
         console.log(res.data);
         caption_all = {...caption_all, ...res.data};
+        if(caption_all != null){
+          $('#onload').fadeOut();
+          $('body').removeClass('hidden');
+        }
     });
   } else if (time == "now") {
     axios.get('http://localhost:5000/episode/' + window.location.pathname.split("/")[2] + "/caption/" + Math.floor(song.currentTime/60)).then((res) => {
         console.log(res.data);
         caption_all = {...caption_all, ...res.data};
+        if(caption_all != null){
+          $('#onload').fadeOut();
+          $('body').removeClass('hidden');
+        }
     });
   }
 }
