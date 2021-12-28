@@ -11,7 +11,7 @@ var app = new Vue({
             'http://3.143.173.120/',
             ''
         ),
-        title: "PodReSystem",
+        title: "Spodify",
         firstclick: false,
         // auto load more params
         scrollTop: 0,
