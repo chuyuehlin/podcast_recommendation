@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
+    <title>Spodify - {{ message[ "episode_name" ] }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- InstantSearch CDN -->
     <link rel="stylesheet" href="https://unpkg.com/@meilisearch/instant-meilisearch/templates/basic_search.css" />
@@ -36,7 +37,7 @@
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=14" rel="stylesheet">
+    <link href="/static/demo3player.css?v=4" rel="stylesheet">
 
 
 </head>
@@ -101,7 +102,7 @@
             
                     </p>
                     <p id="currentKeyword" style="display: none;"></p>
-                    <p id="caption" ref="caption"></p>
+                    <p id="caption" ref="caption" style=" display: flex; justify-content: center;  align-items: center; "></p>
                 </div>
                 <!-- Keywords推薦 -->
                 <div class="rowkey" style="height: 80px;margin:2px 2px 2px 45px;width:100%;padding: 0px 0px 0px 12px;" id="kw-vue">
@@ -184,6 +185,11 @@
 
             <!-- <div class="col" style="overflow-y: scroll;height: 1000px;margin-top:80px"> -->
             <div class="col" style="margin-top:80px;margin-left: 30px;">
+                <div>
+                    <p style="font-size:25px ;font-weight: bold;">
+                        Podcast Information
+                    </p>
+                </div>
                 <!-- 右邊推薦episode卡片的地方 -->
                 <div class="episode-card-wrapper">
                     <a href="/episode/{{ message['recommendation'][0]['episode_uri'] }}" class="episode-card"
@@ -333,6 +339,6 @@
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
-<script src="/static/demo3player.js?v=37"></script>
+<script src="/static/demo3player.js?v=7"></script>
 
 </html>
