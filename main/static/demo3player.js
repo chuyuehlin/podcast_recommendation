@@ -120,7 +120,10 @@ function createCaptionHTML(captionHTML) {
   // ageCurrentTags();
 
   // get future tags
-  let tags = getFutureTags();
+  // let tags = getFutureTags();
+
+  // get all tags
+  let tags = getAllTags();
 
   let green = "#56ac2f";
   let red = "#da3c36";
@@ -146,7 +149,7 @@ function createCaptionHTML(captionHTML) {
       // keyword not in other word
       if((pos == 0 || start == " ") && (end == " " || end == "." || end == ",")){
         // make "future" tag "current"
-        ageFutureTag(item);
+        // ageFutureTag(item);
 
         // color the keyword
         captionHTML = captionHTML.slice(0, pos) 
@@ -164,6 +167,16 @@ function createCaptionHTML(captionHTML) {
   });
 
   return captionHTML;
+}
+
+function getAllTags() {
+  let tags = [];
+
+  document.querySelectorAll('[data-toggle="tooltip"]').forEach(function(item, index, array){
+    tags.push(item.innerText);
+  });
+
+  return tags;
 }
 
 function getFutureTags() {
@@ -276,7 +289,7 @@ function updateImage() {
       // tags_generator.removeIfMax()
       $.getJSON(service_url + '?callback=?', params, function(response) {
         if(0 || response.itemListElement.length == 0 || ((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
         } else {
           $.each(response.itemListElement, function(i, element) {
             var name = element['result']['name'];
@@ -292,7 +305,7 @@ function updateImage() {
               des = element['result']['description'];
             }
             url = element['result']['url'];
-            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -364,7 +377,7 @@ function changeProgressBar() {
       image_links.data.result[0][image_links.data.result[0].length-4][0],
       "",
       undefined,
-      "btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+      "btn btn-success btn-xs kw-tag list-complete-item tag-style1"
     ]);
     check_complete=0
 
@@ -397,7 +410,7 @@ function changeProgressBar() {
       // tags_generator.removeIfMax()
       $.getJSON(service_url + '?callback=?', params, function(response) {
         if(response.itemListElement.length==0||((parseInt(response.itemListElement[0]['resultScore'],10)<10000)&&(response.itemListElement[0]['result']['name'].toLowerCase()!=item[0].toLowerCase()))){
-          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+          tags_generator.addInput([item[0],"",undefined,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
         } else {
           $.each(response.itemListElement, function(i, element) {
             var name=element['result']['name']
@@ -413,7 +426,7 @@ function changeProgressBar() {
               des=element['result']['description']
             }
             url=element['result']['url']
-            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style3"]);
+            tags_generator.addInput([item[0],"["+name+"]"+des,url,"btn btn-success btn-xs kw-tag list-complete-item tag-style1"]);
             $(function () {
               $('[data-toggle="tooltip"]').tooltip({
                 animated: 'fade',
@@ -513,19 +526,20 @@ var tags_generator = new Vue({
   },
   methods: {
     addInput(e) {
-      // tag made of words
-      if(e[0].indexOf(" ") != -1 && e[1] == ""){
-        for(i = 0; i < e[0].split(" ").length; i++) {
-          this.addInput([
-            e[0].split(" ")[i],
-            e[1],
-            e[2],
-            e[3]
-          ]);
-        }
-      }
-      // tag not exist
-      else if(!(this.exist_key.includes(e[0]))){
+      // // tag made of words
+      // if(e[0].indexOf(" ") != -1 && e[1] == ""){
+      //   for(i = 0; i < e[0].split(" ").length; i++) {
+      //     this.addInput([
+      //       e[0].split(" ")[i],
+      //       e[1],
+      //       e[2],
+      //       e[3]
+      //     ]);
+      //   }
+      // }
+      // // tag not exist
+      // else 
+      if(!(this.exist_key.includes(e[0]))){
         this.age.push(1)
         this.inputs.push(e)
         this.exist_key.push(e[0])
