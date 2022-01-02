@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-family: Verdana;">
 
 <head>
     <meta charset="utf-8" />
@@ -25,6 +25,11 @@
 
     <!-- Font-Awesome CDN -->
     <script src="https://kit.fontawesome.com/5327a5f721.js" crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap" rel="stylesheet">
+
     <!-- 幻燈片 -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src="./script.js"></script>
@@ -37,7 +42,7 @@
     <!-- player CSS/JS -->
     <!-- <link href="./podcast_recommendation/frontend/subpage2/static/demo3player.css" rel="stylesheet"> -->
     <!-- <link href="C:\Users\Jenny\podcast_recommendation\frontend\subpage2\static\demo3player.css" rel="stylesheet"> -->
-    <link href="/static/demo3player.css?v=4" rel="stylesheet">
+    <link href="/static/demo3player.css?v=41" rel="stylesheet">
 
 
 </head>
@@ -65,8 +70,9 @@
         <div class="row">
             <div class="col">
                 <p
-                    style="position: absolute; width: 492px; height: 93px; left: -100px; top: 0px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #da3c36;">
-                    <a href="http://localhost:5000/"><b>Spodify</b></a>
+                    style="position: absolute; width: 492px; height: 93px; left: -100px; top: 0px; font-family:'Signika Negative', sans-serif; font-style: normal; font-weight: normal; font-size: 30px; line-height: 93px; color: #da3c36;
+                    ">
+                    <a href="http://localhost:5000/"><b>SPODify</b></a>
                 </p>
                 <!-- 這裡是幻燈片的部分，空白的地方模糊還沒有用好 -->
                 <div class="slideshow" style="position: relative;  overflow: hidden; border-radius: 15px;left: 50px;">
@@ -92,19 +98,17 @@
                 <!-- Captions -->
                 <div class="row"
                     style="position:relative;background-color: 	rgb(241, 230, 223);color: black;height: 100px;width: 100%;margin-left: 45px;margin-top: 90px;border-radius: 10px;z-index: 1;
-                    display: flex; justify-content: center;  align-items: center;
                     @media (min-width:768px) {
                         .row {
                             position: relative;
                         }
-                    };
-                    ">
+                    }">
                     <p style="display: none;" id="caption_all">
                         <!-- {{ message[ "captions" ] }} -->
             
                     </p>
                     <p id="currentKeyword" style="display: none;"></p>
-                    <p id="caption" ref="caption"></p>
+                    <p id="caption" ref="caption" style=" display: flex; justify-content: center;  align-items: center; "></p>
                 </div>
                 <!-- Keywords推薦 -->
                 <div class="rowkey" style="height: 80px;margin:2px 2px 2px 45px;width:100%;padding: 0px 0px 0px 12px;" id="kw-vue">
@@ -203,12 +207,12 @@
                             </div>
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message['episode_name'] }}</h3>
-                                <div class="info">{{ message['show_name'] }}
+                                <div class="info" style="font-family:'Signika Negative', sans-serif;">{{ message['show_name'] }}
                                     <!-- <span class="icon-explicit"></span>
                                     <span class="channel"></span> -->
                                 </div>
                                 <div class="card-content">
-                                    <p class="description">{{ message["recommendation"][0]['episode_description'] }}</p>
+                                    <p class="description" style="font-family:'Signika Negative', sans-serif;">{{ message["recommendation"][0]['episode_description'] }}</p>
                                 </div>
                             </div>
                         </div>
@@ -224,7 +228,7 @@
 
                 <div>
                     <p style="font-size:25px ;font-weight: bold;">
-                        Recommend Podcast
+                        Recommended Podcasts
                     </p>
                 </div>
 
@@ -236,9 +240,9 @@
                                     src="{{ message['recommendation'][1]['poster'] }}">
                             </div>
                             <div class="episode-info-wrapper">
-                                <h3 class="title">{{ message["recommendation"][1]['episode_name'] }}</h3><br>
+                                <h3 class="title" >{{ message["recommendation"][1]['episode_name'] }}</h3><br>
                                 <div class="card-content">
-                                    <p class="description">{{ message["recommendation"][1]['episode_description'] }}</p>
+                                    <p class="description" style="font-family:'Signika Negative', sans-serif;">{{ message["recommendation"][1]['episode_description'] }}</p>
                                 </div>
                                 <!-- <div class="info">
                                     <span class="icon-explicit"></span>
@@ -266,7 +270,7 @@
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message["recommendation"][2]['episode_name'] }}</h3><br>
                                 <div class="card-content">
-                                    <p class="description">{{ message["recommendation"][2]['episode_description'] }}</p>
+                                    <p class="description" style="font-family:'Signika Negative', sans-serif;">{{ message["recommendation"][2]['episode_description'] }}</p>
                                 </div>
                                 <!-- <div class="info">
                                     <span class="icon-explicit"></span>
@@ -294,7 +298,7 @@
                             <div class="episode-info-wrapper">
                                 <h3 class="title">{{ message["recommendation"][3]['episode_name'] }}</h3><br>
                                 <div class="card-content">
-                                    <p class="description">{{ message["recommendation"][3]['episode_description'] }}</p>
+                                    <p class="description" style="font-family:'Signika Negative', sans-serif;">{{ message["recommendation"][3]['episode_description'] }}</p>
                                 </div>
                                 <!-- <div class="info">
                                     <span class="icon-explicit"></span>
