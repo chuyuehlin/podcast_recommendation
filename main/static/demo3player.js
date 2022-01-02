@@ -30,7 +30,7 @@ var service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 function playPause() {
     if (playing) {
         reco_event = setInterval(updateImage, 15000);
-        reco_loadCap = setInterval(loadCaption("next"), 49000);
+        reco_loadCap = setInterval(function(){loadCaption("next")}, 49000);
         reco_updateCap = setInterval(updateCaption, 100);
         // const song = document.querySelector('#song')
         // thumbnail = document.querySelector('#thumbnail');
@@ -261,7 +261,7 @@ function updateImage() {
       image_links.data.result[0][image_links.data.result[0].length-4][0],
       "",
       undefined,
-      "btn btn-success btn-xs kw-tag list-complete-item tag-style3"
+      "btn btn-success btn-xs kw-tag list-complete-item tag-style1"
     ]);
     check_complete = 0
 

@@ -98,17 +98,17 @@
                 <!-- Captions -->
                 <div class="row"
                     style="position:relative;background-color: 	rgb(241, 230, 223);color: black;height: 100px;width: 100%;margin-left: 45px;margin-top: 90px;border-radius: 10px;z-index: 1;
-                    @media (min-width:768px) {
+                    display: flex; justify-content: center;  align-items: center;@media (min-width:768px) {
                         .row {
                             position: relative;
                         }
-                    }">
+                    };">
                     <p style="display: none;" id="caption_all">
                         <!-- {{ message[ "captions" ] }} -->
             
                     </p>
                     <p id="currentKeyword" style="display: none;"></p>
-                    <p id="caption" ref="caption" style=" display: flex; justify-content: center;  align-items: center; "></p>
+                    <p id="caption" ref="caption"></p>
                 </div>
                 <!-- Keywords推薦 -->
                 <div class="rowkey" style="height: 80px;margin:2px 2px 2px 45px;width:100%;padding: 0px 0px 0px 12px;" id="kw-vue">
