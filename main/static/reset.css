@@ -1,7 +1,9 @@
 /* Desktop-5 */
 
 body { 
-    font-family: sans-serif; 
+    /* font-family: sans-serif;  */
+    /* font-family: "Roboto", sans-serif; */
+    /* font-family: verdana; */
     padding: 1em; 
     display: flex;
     justify-content: center;
@@ -10,7 +12,10 @@ body {
 
 li { list-style-type: none; }
 
-.ais-SearchBox { margin: 1em 0; }
+.ais-SearchBox { 
+    margin: 1em 0;
+    font-family: Verdana !important;
+}
 
 .main{
     background-color: #FCF7F4;
@@ -93,7 +98,9 @@ li { list-style-type: none; }
     height: 93px;
     top: 30%;
 
-    font-family: Roboto;
+    /* font-family: Roboto; */
+    /* font-family: 'Signika Negative', sans-serif !important; */
+    
     font-style: normal;
     font-weight: normal;
     font-size: 79px;
@@ -176,6 +183,8 @@ li { list-style-type: none; }
     animation-name: moveTitle;
     animation-duration: 0.7s;
     animation-fill-mode: forwards;
+    /* font-family: 'Signika Negative', sans-serif; */
+    /* font-family: 'Signika Negative', sans-serif !important; */
 } @keyframes moveTitle {
     100% {
         transform: translate(-725px, -37px);
@@ -376,7 +385,8 @@ li { list-style-type: none; }
 }
 
 .hit-publisher{
-    font-family: 'Nunito Sans', sans-serif;
+    /* font-family: 'Nunito Sans', sans-serif; */
+    font-family: 'Signika Negative', sans-serif;
     position: absolute;
     top: 68%;
     left: 0%;
@@ -393,7 +403,8 @@ li { list-style-type: none; }
 }
 
 .hit-showname{
-    font-family: 'Nunito Sans', sans-serif;
+    /* font-family: 'Nunito Sans', sans-serif; */
+    font-family: 'Signika Negative', sans-serif;
     position: absolute;
     top: 75%;
     left: 0%;
@@ -410,7 +421,9 @@ li { list-style-type: none; }
 }
 
 .hit-episode{
-    font-family: 'Nunito Sans', sans-serif;
+    /* font-family: 'Nunito Sans', sans-serif; */
+    /* font-family: 'Signika Negative', sans-serif; */
+    font-family: Verdana;
     position: absolute;
     top: 22%;
     left: 0%;
@@ -431,7 +444,8 @@ li { list-style-type: none; }
 
 .description{
     opacity: 0;
-    font-family: 'Nunito Sans', sans-serif;
+    /* font-family: 'Nunito Sans', sans-serif; */
+    font-family: 'Signika Negative', sans-serif;
     position: absolute;
     height: 165px;
     top: 230px;
@@ -464,7 +478,8 @@ li { list-style-type: none; }
 }
 
 .summary{
-    font-family: 'Nunito Sans', sans-serif;
+    /* font-family: 'Nunito Sans', sans-serif; */
+    font-family: 'Signika Negative', sans-serif;
     font-size: 15px;
     line-height: 24px;
     height: 80%;
@@ -782,4 +797,5 @@ li { list-style-type: none; }
     cursor: pointer;
     background-color: #da3c36;
     color: #FFFFFF;
+    font-family: 'Signika Negative', sans-serif;
 }

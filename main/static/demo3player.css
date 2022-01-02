@@ -15,6 +15,7 @@ html, body {
 
   
 }
+col.p:hover:first-letter:{ color:orange;}
 
 .rowtrack{
 }
